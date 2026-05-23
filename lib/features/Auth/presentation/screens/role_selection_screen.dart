@@ -1,18 +1,31 @@
+
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../domain/entities/user_role.dart';
+import '../provider/auth_provider.dart';
 
-class RoleSelectionScreen extends StatefulWidget {
+class RoleSelectionScreen extends ConsumerStatefulWidget {
   const RoleSelectionScreen({super.key});
 
   @override
-  State<RoleSelectionScreen> createState() => _RoleSelectionScreenState();
+  ConsumerState<RoleSelectionScreen> createState() =>
+      _RoleSelectionScreenState();
 }
 
-class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
+class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   UserRole? _selectedRole;
+
+  Future<void> _onContinue() async {
+    if (_selectedRole == null) return;
+
+    await ref.read(authProvider.notifier).selectRole(_selectedRole!);
+
+    if (!mounted) return;
+
+    Navigator.pushNamed(context, AppRouter.phoneInput);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,36 +69,22 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
       ),
     );
   }
-
-  Future<void> _onContinue() async {
-    if (_selectedRole == null) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      'user_role',
-      _selectedRole == UserRole.traveler ? 'traveler' : 'driver',
-    );
-
-    if (!mounted) return;
-
-    Navigator.pushNamed(context, AppRouter.phoneInput);
-  }
 }
+
 class _HeaderSection extends StatelessWidget {
   const _HeaderSection();
 
   @override
   Widget build(BuildContext context) {
     return Column(
-         crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-    
         Text(
           'Masar',
           style: TextStyle(
             fontSize: 40,
             fontWeight: FontWeight.w700,
-            color: AppColors.primary,  // الـ Sage Green
+            color: AppColors.primary,
             letterSpacing: 1.2,
           ),
         ),
@@ -103,8 +102,6 @@ class _HeaderSection extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _RoleCard extends StatelessWidget {
   final IconData icon;
@@ -133,7 +130,6 @@ class _RoleCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          // لما يتاختار البorder بيبقى primary
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
             width: isSelected ? 2 : 1,
@@ -156,7 +152,6 @@ class _RoleCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // الأيقونة
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: 60,
@@ -174,7 +169,6 @@ class _RoleCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            // النص
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +194,6 @@ class _RoleCard extends StatelessWidget {
                 ],
               ),
             ),
-            // checkmark لما يتاختار
             AnimatedOpacity(
               duration: const Duration(milliseconds: 200),
               opacity: isSelected ? 1 : 0,
@@ -224,8 +217,6 @@ class _RoleCard extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _ContinueButton extends StatelessWidget {
   final bool isEnabled;

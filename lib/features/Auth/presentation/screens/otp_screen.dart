@@ -1,46 +1,91 @@
-
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/snackbar_helper.dart';
+import '../../domain/entities/user_role.dart';
+import '../provider/auth_provider.dart';
 
-class OtpScreen extends StatefulWidget {
+class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
 
   const OtpScreen({super.key, required this.phoneNumber});
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends ConsumerState<OtpScreen> {
+  // Firebase OTP بيبعت 6 أرقام
   final List<TextEditingController> _controllers =
-      List.generate(4, (_) => TextEditingController());
-
+      List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focusNodes =
-      List.generate(4, (_) => FocusNode());
+      List.generate(6, (_) => FocusNode());
 
   bool _isLoading = false;
+  int _secondsLeft = 60;
+  bool _canResend = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    setState(() {
+      _secondsLeft = 60;
+      _canResend = false;
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        if (_secondsLeft > 0) {
+          _secondsLeft--;
+        } else {
+          _canResend = true;
+          timer.cancel();
+        }
+      });
+    });
+  }
+
+  Future<void> _onResend() async {
+    if (!_canResend) return;
+    _timer?.cancel();
+
+    try {
+      await ref.read(authRepositoryProvider).sendOtp(widget.phoneNumber);
+      if (!mounted) return;
+      _startTimer();
+      SnackbarHelper.showSuccess(context, 'Code resent successfully!');
+    } catch (e) {
+      if (!mounted) return;
+      SnackbarHelper.showError(context, 'Failed to resend code. Try again.');
+    }
+  }
 
   @override
   void dispose() {
-    for (var c in _controllers) {
-      c.dispose();
-    }
-    for (var f in _focusNodes) {
-      f.dispose();
-    }
+    _timer?.cancel();
+    for (var c in _controllers) c.dispose();
+    for (var f in _focusNodes) f.dispose();
     super.dispose();
   }
-  String get _otpCode =>
-      _controllers.map((c) => c.text).join();
 
-  bool get _isComplete => _otpCode.length == 4;
+  String get _otpCode => _controllers.map((c) => c.text).join();
+  bool get _isComplete => _otpCode.length == 6;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-  
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
@@ -71,7 +116,11 @@ class _OtpScreenState extends State<OtpScreen> {
                 onPressed: _onVerify,
               ),
               const SizedBox(height: 24),
-              const _ResendSection(),
+              _ResendSection(
+                secondsLeft: _secondsLeft,
+                canResend: _canResend,
+                onResend: _onResend,
+              ),
               const Spacer(flex: 2),
             ],
           ),
@@ -81,35 +130,60 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void _onDigitChanged(int index, String value) {
-   
-    if (value.isNotEmpty && index < 3) {
+    if (value.isNotEmpty && index < 5) {
       _focusNodes[index + 1].requestFocus();
     }
     if (value.isEmpty && index > 0) {
       _focusNodes[index - 1].requestFocus();
     }
-
     setState(() {});
   }
 
-  void _onVerify() {
+  Future<void> _onVerify() async {
     if (!_isComplete) return;
 
     setState(() => _isLoading = true);
 
-        Future.delayed(const Duration(seconds: 1), () {
+    try {
+      // بنبعت الـ OTP code الحقيقي لـ Firebase
+      await ref.read(authProvider.notifier).login(_otpCode);
+
       if (!mounted) return;
+
       setState(() => _isLoading = false);
 
-     
+      final authState = ref.read(authProvider);
+
+      if (authState.hasError) {
+        SnackbarHelper.showError(
+          context,
+          authState.failure!.message,
+        );
+        return;
+      }
+
+      SnackbarHelper.showSuccess(context, 'Login successful! Welcome 🎉');
+
+      final route = authState.role == UserRole.traveler
+          ? AppRouter.travelerHome
+          : AppRouter.driverHome;
+
       Navigator.pushNamedAndRemoveUntil(
         context,
-        AppRouter.travelerHome,
-        (route) => false, 
+        route,
+        (route) => false,
       );
-    });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      SnackbarHelper.showError(
+        context,
+        'Invalid code. Please try again.',
+      );
+    }
   }
 }
+
 class _HeaderSection extends StatelessWidget {
   final String phoneNumber;
 
@@ -138,7 +212,6 @@ class _HeaderSection extends StatelessWidget {
             ),
             children: [
               const TextSpan(text: 'Code sent to '),
-              // الرقم بيبان bold وبلون مختلف
               TextSpan(
                 text: '+20 $phoneNumber',
                 style: const TextStyle(
@@ -153,8 +226,6 @@ class _HeaderSection extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _OtpBoxesRow extends StatelessWidget {
   final List<TextEditingController> controllers;
@@ -172,7 +243,7 @@ class _OtpBoxesRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(
-        4,
+        6,
         (index) => _OtpSingleBox(
           controller: controllers[index],
           focusNode: focusNodes[index],
@@ -182,8 +253,6 @@ class _OtpBoxesRow extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _OtpSingleBox extends StatelessWidget {
   final TextEditingController controller;
@@ -199,8 +268,8 @@ class _OtpSingleBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 64,
-      height: 64,
+      width: 48,
+      height: 56,
       child: TextFormField(
         controller: controller,
         focusNode: focusNode,
@@ -208,7 +277,7 @@ class _OtpSingleBox extends StatelessWidget {
         textAlign: TextAlign.center,
         maxLength: 1,
         style: const TextStyle(
-          fontSize: 24,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
           color: AppColors.textDark,
         ),
@@ -224,11 +293,9 @@ class _OtpSingleBox extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(color: AppColors.border),
           ),
-
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide:
-                const BorderSide(color: AppColors.primary, width: 2),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
           ),
         ),
         onChanged: onChanged,
@@ -236,8 +303,6 @@ class _OtpSingleBox extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _VerifyButton extends StatelessWidget {
   final bool isLoading;
@@ -256,7 +321,6 @@ class _VerifyButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-    
         onPressed: (isEnabled && !isLoading) ? onPressed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -288,38 +352,51 @@ class _VerifyButton extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────
-
 class _ResendSection extends StatelessWidget {
-  const _ResendSection();
+  final int secondsLeft;
+  final bool canResend;
+  final VoidCallback onResend;
+
+  const _ResendSection({
+    required this.secondsLeft,
+    required this.canResend,
+    required this.onResend,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          "Didn't receive the code? ",
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textLight,
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-      
-            debugPrint('Resend OTP');
-          },
-          child: const Text(
-            'Resend',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
+    return Center(
+      child: canResend
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Didn't receive the code? ",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textLight,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: onResend,
+                  child: const Text(
+                    'Resend',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : Text(
+              'Resend code in ${secondsLeft}s',
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textLight,
+              ),
             ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,16 +1,18 @@
+import 'package:etla3_ya_osta/features/Auth/domain/entities/user_role.dart';
+import 'package:etla3_ya_osta/features/Auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -19,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-   
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -31,9 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _animController.forward();
-
-  
-    _checkAuthAndNavigate();
+    _initApp();
   }
 
   @override
@@ -42,27 +41,23 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  Future<void> _checkAuthAndNavigate() async {
-    
+  Future<void> _initApp() async {
     await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-    final role  = prefs.getString('user_role');
+    await ref.read(authProvider.notifier).checkAuth();
 
     if (!mounted) return;
 
-    if (token != null && role != null) {
-  
-      final route = role == 'traveler'
+    final authState = ref.read(authProvider);
+
+    if (authState.isAuthenticated) {
+      final route = authState.role == UserRole.traveler
           ? AppRouter.travelerHome
           : AppRouter.driverHome;
-
       Navigator.pushReplacementNamed(context, route);
     } else {
-      // مفيش token — روح الـ Role Selection
       Navigator.pushReplacementNamed(context, AppRouter.roleSelection);
     }
   }
@@ -77,7 +72,6 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // الـ Logo
               Container(
                 width: 90,
                 height: 90,
@@ -92,7 +86,6 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               const SizedBox(height: 20),
-              // اسم التطبيق
               const Text(
                 'Masar',
                 style: TextStyle(
@@ -111,7 +104,6 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               const SizedBox(height: 48),
-              // Loading indicator
               SizedBox(
                 width: 24,
                 height: 24,

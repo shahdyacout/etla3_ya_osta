@@ -1,17 +1,19 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/snackbar_helper.dart';
+import '../provider/auth_provider.dart';
 
-class PhoneInputScreen extends StatefulWidget {
+class PhoneInputScreen extends ConsumerStatefulWidget {
   const PhoneInputScreen({super.key});
 
   @override
-  State<PhoneInputScreen> createState() => _PhoneInputScreenState();
+  ConsumerState<PhoneInputScreen> createState() => _PhoneInputScreenState();
 }
 
-class _PhoneInputScreenState extends State<PhoneInputScreen> {
+class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -52,22 +54,38 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     );
   }
 
-  void _onSendCode() {
+  Future<void> _onSendCode() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    Future.delayed(const Duration(seconds: 1), () {
+
+    try {
+      final phone = _phoneController.text.trim();
+
+      // بنبعت الـ OTP عن طريق Firebase
+      await ref.read(authRepositoryProvider).sendOtp(phone);
+
       if (!mounted) return;
       setState(() => _isLoading = false);
 
+      // بعد ما الـ OTP اتبعت، روح شاشة الـ OTP
       Navigator.pushNamed(
         context,
         AppRouter.otpScreen,
-        arguments: _phoneController.text.trim(),
+        arguments: phone,
       );
-    });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      SnackbarHelper.showError(
+        context,
+        'Failed to send code. Check your number and try again.',
+      );
+    }
   }
 }
+
 class _HeaderSection extends StatelessWidget {
   const _HeaderSection();
 
@@ -98,8 +116,6 @@ class _HeaderSection extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────
-
 class _PhoneField extends StatelessWidget {
   final TextEditingController controller;
 
@@ -110,7 +126,6 @@ class _PhoneField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: TextInputType.phone,
-      // بيقبل أرقام بس
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 11,
       style: const TextStyle(
@@ -126,7 +141,6 @@ class _PhoneField extends StatelessWidget {
           color: AppColors.textLight.withOpacity(0.5),
           letterSpacing: 1.5,
         ),
-        // الـ prefix بيوري كود مصر
         prefixIcon: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           margin: const EdgeInsets.only(right: 12),
@@ -138,7 +152,7 @@ class _PhoneField extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('🇪🇬', style: TextStyle(fontSize: 20)),
+              const Text('🇪🇬', style: TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
               Text(
                 '+20',
@@ -188,8 +202,6 @@ class _PhoneField extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _SendButton extends StatelessWidget {
   final bool isLoading;
