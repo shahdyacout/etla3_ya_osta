@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "etla3_ya_osta",
+            "cwd": "etla3_ya_osta",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "etla3_ya_osta (profile mode)",
+            "cwd": "etla3_ya_osta",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "etla3_ya_osta (release mode)",
+            "cwd": "etla3_ya_osta",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
