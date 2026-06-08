@@ -1,22 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/snackbar_helper.dart';
-import '../../domain/entities/user_role_entity.dart';
-import '../provider/auth_provider.dart';
+import 'package:etla3_ya_osta/core/entities/user_role_entity.dart';
+import '../cubit/auth_cubit.dart';
 
-class OtpScreen extends ConsumerStatefulWidget {
+class OtpScreen extends StatefulWidget {
   final String phoneNumber;
 
   const OtpScreen({super.key, required this.phoneNumber});
 
   @override
-  ConsumerState<OtpScreen> createState() => _OtpScreenState();
+  State<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends ConsumerState<OtpScreen> {
+class _OtpScreenState extends State<OtpScreen> {
   // Firebase OTP بيبعت 6 أرقام
   final List<TextEditingController> _controllers = List.generate(
     6,
@@ -62,7 +62,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     _timer?.cancel();
 
     try {
-      await ref.read(authRepositoryProvider).sendOtp(widget.phoneNumber);
+      await context.read<AuthCubit>().sendOtp(widget.phoneNumber);
       if (!mounted) return;
       _startTimer();
       SnackbarHelper.showSuccess(context, 'Code resent successfully!');
@@ -154,13 +154,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
     try {
       // بنبعت الـ OTP code الحقيقي لـ Firebase
-      await ref.read(authProvider.notifier).login(_otpCode);
+      await context.read<AuthCubit>().login(_otpCode);
 
       if (!mounted) return;
 
       setState(() => _isLoading = false);
 
-      final authState = ref.read(authProvider);
+      final authState = context.read<AuthCubit>().state;
 
       if (authState.hasError) {
         SnackbarHelper.showError(context, authState.failure!.message);
