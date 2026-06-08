@@ -1,4 +1,4 @@
-import 'package:etla3_ya_osta/features/Auth/domain/entities/user_role.dart';
+import '../../domain/entities/user_role_entity.dart';
 import 'package:etla3_ya_osta/features/Auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,10 +26,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       duration: const Duration(milliseconds: 800),
     );
 
-    _fadeAnim = CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeIn,
-    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeIn);
 
     _animController.forward();
     _initApp();
@@ -98,10 +95,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               const SizedBox(height: 8),
               const Text(
                 'Smart Intercity Microbus Management',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textLight,
-                ),
+                style: TextStyle(fontSize: 13, color: AppColors.textLight),
               ),
               const SizedBox(height: 48),
               SizedBox(

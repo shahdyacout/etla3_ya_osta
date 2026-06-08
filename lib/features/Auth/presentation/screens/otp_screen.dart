@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/snackbar_helper.dart';
-import '../../domain/entities/user_role.dart';
+import '../../domain/entities/user_role_entity.dart';
 import '../provider/auth_provider.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -18,10 +18,11 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   // Firebase OTP بيبعت 6 أرقام
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes =
-      List.generate(6, (_) => FocusNode());
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
+  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
   bool _isLoading = false;
   int _secondsLeft = 60;
@@ -74,8 +75,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    for (var c in _controllers) c.dispose();
-    for (var f in _focusNodes) f.dispose();
+    for (var c in _controllers) {
+      c.dispose();
+    }
+    for (var f in _focusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 
@@ -90,8 +95,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios,
-              color: AppColors.textDark, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -155,10 +163,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       final authState = ref.read(authProvider);
 
       if (authState.hasError) {
-        SnackbarHelper.showError(
-          context,
-          authState.failure!.message,
-        );
+        SnackbarHelper.showError(context, authState.failure!.message);
         return;
       }
 
@@ -168,18 +173,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           ? AppRouter.travelerHome
           : AppRouter.driverHome;
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        route,
-        (route) => false,
-      );
+      Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      SnackbarHelper.showError(
-        context,
-        'Invalid code. Please try again.',
-      );
+      SnackbarHelper.showError(context, 'Invalid code. Please try again.');
     }
   }
 }
@@ -372,10 +370,7 @@ class _ResendSection extends StatelessWidget {
               children: [
                 const Text(
                   "Didn't receive the code? ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textLight,
-                  ),
+                  style: TextStyle(fontSize: 14, color: AppColors.textLight),
                 ),
                 GestureDetector(
                   onTap: onResend,
@@ -392,10 +387,7 @@ class _ResendSection extends StatelessWidget {
             )
           : Text(
               'Resend code in ${secondsLeft}s',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textLight,
-              ),
+              style: const TextStyle(fontSize: 14, color: AppColors.textLight),
             ),
     );
   }

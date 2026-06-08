@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:etla3_ya_osta/features/Auth/domain/repo%20interface/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../domain/entities/user_role.dart';
+import '../../domain/entities/user_role_entity.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  static const _keyRole   = 'user_role';
+  static const _keyRole = 'user_role';
   static const _keyUserId = 'user_id';
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -50,8 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
       smsCode: otp,
     );
 
-    final userCredential =
-        await _firebaseAuth.signInWithCredential(credential);
+    final userCredential = await _firebaseAuth.signInWithCredential(credential);
 
     // بنجيب token جديد دايماً
     final token = await userCredential.user?.getIdToken() ?? '';

@@ -1,4 +1,4 @@
-import 'user_role.dart';
+import 'user_role_entity.dart';
 import '../../../../core/error/failures.dart';
 
 class AuthState {
@@ -6,7 +6,7 @@ class AuthState {
   final String? token;
   final UserRole? role;
   final String? userId;
-  final Failure? failure;  // ← بدلنا String? error بـ Failure?
+  final Failure? failure; // ← بدلنا String? error بـ Failure?
 
   const AuthState({
     this.isLoading = false,
@@ -27,7 +27,7 @@ class AuthState {
     UserRole? role,
     String? userId,
     Failure? failure,
-    bool clearFailure = false,  // ← عشان نمسح الـ error بعد ما يتعرض
+    bool clearFailure = false, // ← عشان نمسح الـ error بعد ما يتعرض
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,

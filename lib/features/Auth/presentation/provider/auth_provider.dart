@@ -1,14 +1,12 @@
 import 'package:etla3_ya_osta/features/Auth/data/repo/auth_repository_impl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/auth_state.dart';
-import '../../domain/entities/user_role.dart';
+import '../../domain/entities/user_role_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/select_role_usecase.dart';
 import '../../../../core/error/failures.dart';
 
-final authRepositoryProvider = Provider(
-  (ref) => AuthRepositoryImpl(),
-);
+final authRepositoryProvider = Provider((ref) => AuthRepositoryImpl());
 
 final loginUseCaseProvider = Provider(
   (ref) => LoginUseCase(ref.read(authRepositoryProvider)),
@@ -27,10 +25,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required LoginUseCase loginUseCase,
     required SelectRoleUseCase selectRoleUseCase,
     required AuthRepositoryImpl repository,
-  })  : _loginUseCase = loginUseCase,
-        _selectRoleUseCase = selectRoleUseCase,
-        _repository = repository,
-        super(const AuthState());
+  }) : _loginUseCase = loginUseCase,
+       _selectRoleUseCase = selectRoleUseCase,
+       _repository = repository,
+       super(const AuthState());
 
   Future<void> checkAuth() async {
     state = state.copyWith(isLoading: true);
@@ -48,10 +46,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         state = state.copyWith(isLoading: false);
       }
     } on Exception {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const CacheFailure(),
-      );
+      state = state.copyWith(isLoading: false, failure: const CacheFailure());
     }
   }
 
@@ -60,9 +55,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _selectRoleUseCase(role);
       state = state.copyWith(role: role);
     } on Exception {
-      state = state.copyWith(
-        failure: const CacheFailure(),
-      );
+      state = state.copyWith(failure: const CacheFailure());
     }
   }
 
@@ -71,10 +64,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     try {
       final token = await _loginUseCase(phone);
-      state = state.copyWith(
-        isLoading: false,
-        token: token,
-      );
+      state = state.copyWith(isLoading: false, token: token);
     } on Exception catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -88,9 +78,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _repository.logout();
       state = const AuthState();
     } on Exception {
-      state = state.copyWith(
-        failure: const CacheFailure(),
-      );
+      state = state.copyWith(failure: const CacheFailure());
     }
   }
 }
