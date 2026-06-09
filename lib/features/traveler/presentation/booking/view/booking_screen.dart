@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../core/entities/trip_entity.dart';
 import '../../../../../core/router/app_router.dart';
+import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../cubit/booking_cubit.dart';
 import '../cubit/booking_state.dart';
@@ -30,22 +30,20 @@ class _BookingScreenState extends State<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF91A896);
-    const textColor = Color(0xFF1E3A5F);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.background,
 
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: textColor),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Booking Details",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
         ),
       ),
 
@@ -98,7 +96,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 children: [
                                   const Text(
                                     "From",
-                                    style: TextStyle(color: Colors.grey),
+                                    style: TextStyle(color: AppColors.grey),
                                   ),
                                   Text(
                                     bookingState.trip.departurePoint,
@@ -114,7 +112,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 children: [
                                   const Text(
                                     "To",
-                                    style: TextStyle(color: Colors.grey),
+                                    style: TextStyle(color: AppColors.grey),
                                   ),
                                   Text(
                                     bookingState.trip.destinationName,
@@ -207,7 +205,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                   Text(
                                     "${bookingState.total} EGP",
                                     style: const TextStyle(
-                                      color: primaryColor,
+                                      color: AppColors.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
