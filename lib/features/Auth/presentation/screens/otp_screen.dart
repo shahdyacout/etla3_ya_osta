@@ -170,7 +170,7 @@ class _OtpScreenState extends State<OtpScreen> {
       SnackbarHelper.showSuccess(context, 'Login successful! Welcome 🎉');
 
       final route = authState.role == UserRole.traveler
-          ? AppRouter.travelerHome
+          ? AppRouter.destinations
           : AppRouter.driverHome;
 
       Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);

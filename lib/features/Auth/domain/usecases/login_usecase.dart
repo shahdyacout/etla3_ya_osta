@@ -1,6 +1,6 @@
 
 import 'package:etla3_ya_osta/features/Auth/domain/repo%20interface/auth_repository.dart';
-import '../../../../core/usecase/usecase.dart';
+import 'usecase.dart';
 
 class LoginUseCase extends UseCase<String, String> {
   final AuthRepository repository;
