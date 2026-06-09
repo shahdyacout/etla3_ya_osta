@@ -1,6 +1,6 @@
 import 'package:etla3_ya_osta/features/Auth/domain/repo%20interface/rating_repository.dart';
 
-import '../../domain/entities/trip_rating.dart';
+import 'package:etla3_ya_osta/core/entities/trip_rating_entity.dart';
 
 class RatingRepositoryImpl implements RatingRepository {
   @override

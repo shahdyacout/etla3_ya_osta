@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/snackbar_helper.dart';
-import '../provider/auth_provider.dart';
+import '../../presentation/cubit/auth_cubit.dart';
 
-class PhoneInputScreen extends ConsumerStatefulWidget {
+class PhoneInputScreen extends StatefulWidget {
   const PhoneInputScreen({super.key});
 
   @override
-  ConsumerState<PhoneInputScreen> createState() => _PhoneInputScreenState();
+  State<PhoneInputScreen> createState() => _PhoneInputScreenState();
 }
 
-class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
+class _PhoneInputScreenState extends State<PhoneInputScreen> {
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -41,10 +41,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                 const SizedBox(height: 40),
                 _PhoneField(controller: _phoneController),
                 const SizedBox(height: 24),
-                _SendButton(
-                  isLoading: _isLoading,
-                  onPressed: _onSendCode,
-                ),
+                _SendButton(isLoading: _isLoading, onPressed: _onSendCode),
                 const Spacer(flex: 3),
               ],
             ),
@@ -63,17 +60,13 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
       final phone = _phoneController.text.trim();
 
       // بنبعت الـ OTP عن طريق Firebase
-      await ref.read(authRepositoryProvider).sendOtp(phone);
+      await context.read<AuthCubit>().sendOtp(phone);
 
       if (!mounted) return;
       setState(() => _isLoading = false);
 
       // بعد ما الـ OTP اتبعت، روح شاشة الـ OTP
-      Navigator.pushNamed(
-        context,
-        AppRouter.otpScreen,
-        arguments: phone,
-      );
+      Navigator.pushNamed(context, AppRouter.otpScreen, arguments: phone);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
@@ -145,9 +138,7 @@ class _PhoneField extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           margin: const EdgeInsets.only(right: 12),
           decoration: BoxDecoration(
-            border: Border(
-              right: BorderSide(color: AppColors.border),
-            ),
+            border: Border(right: BorderSide(color: AppColors.border)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -207,10 +198,7 @@ class _SendButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onPressed;
 
-  const _SendButton({
-    required this.isLoading,
-    required this.onPressed,
-  });
+  const _SendButton({required this.isLoading, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

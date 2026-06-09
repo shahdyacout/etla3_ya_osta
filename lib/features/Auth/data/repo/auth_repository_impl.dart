@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'package:etla3_ya_osta/features/Auth/domain/repo%20interface/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../domain/entities/user_role.dart';
+import 'package:etla3_ya_osta/core/entities/user_role_entity.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  static const _keyRole   = 'user_role';
+  static const _keyRole = 'user_role';
   static const _keyUserId = 'user_id';
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String? _verificationId;
 
@@ -50,12 +52,18 @@ class AuthRepositoryImpl implements AuthRepository {
       smsCode: otp,
     );
 
-    final userCredential =
-        await _firebaseAuth.signInWithCredential(credential);
+    final userCredential = await _firebaseAuth.signInWithCredential(credential);
 
-    // بنجيب token جديد دايماً
     final token = await userCredential.user?.getIdToken() ?? '';
     final userId = userCredential.user?.uid ?? '';
+    final phone = userCredential.user?.phoneNumber ?? '';
+
+    // بنحفظ المستخدم في Firestore
+    await _firestore.collection('users').doc(userId).set({
+      'phone': phone,
+      'createdAt': FieldValue.serverTimestamp(),
+      'lastLogin': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
@@ -66,11 +74,19 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> selectRole(UserRole role) async {
+    final roleStr = role == UserRole.traveler ? 'traveler' : 'driver';
+
+    // بنحفظ الـ role في Firestore
+    final userId = _firebaseAuth.currentUser?.uid;
+    if (userId != null) {
+      await _firestore.collection('users').doc(userId).set({
+        'role': roleStr,
+      }, SetOptions(merge: true));
+    }
+
+    // وكمان في SharedPreferences كـ cache
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      _keyRole,
-      role == UserRole.traveler ? 'traveler' : 'driver',
-    );
+    await prefs.setString(_keyRole, roleStr);
   }
 
   @override
@@ -86,28 +102,69 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<({String? token, UserRole? role})> getSession() async {
     final prefs = await SharedPreferences.getInstance();
-    final roleStr = prefs.getString(_keyRole);
-
-    // بنتحقق من Firebase User مباشرة
     final firebaseUser = _firebaseAuth.currentUser;
 
     if (firebaseUser == null) {
-      // مفيش user — امسح أي بيانات قديمة
       await prefs.remove('auth_token');
+      await prefs.remove(_keyRole);
+      await prefs.remove(_keyUserId);
       return (token: null, role: null);
     }
 
-    // بنجدد الـ token تلقائياً من Firebase
-    final freshToken = await firebaseUser.getIdToken(true) ?? '';
+    // قراءة البيانات المحفوظة محلياً أولاً (سريع جداً)
+    final cachedToken = prefs.getString('auth_token');
+    final cachedRoleStr = prefs.getString(_keyRole);
 
-    // بنحدث الـ token المحفوظ
+    UserRole? cachedRole;
+    if (cachedRoleStr != null) {
+      cachedRole = cachedRoleStr == 'traveler'
+          ? UserRole.traveler
+          : UserRole.driver;
+    }
+
+    // إرجاع البيانات المخزنة فوراً
+    if (cachedToken != null && cachedRole != null) {
+      // تحديث Token في الخلفية دون توقف المستخدم
+      _refreshTokenInBackground(firebaseUser, prefs);
+      return (token: cachedToken, role: cachedRole);
+    }
+
+    // إذا لم توجد بيانات مخزنة، بننتظر الجلب من Firebase
+    final freshToken = await firebaseUser.getIdToken(true) ?? '';
     await prefs.setString('auth_token', freshToken);
 
     UserRole? role;
-    if (roleStr != null) {
-      role = roleStr == 'traveler' ? UserRole.traveler : UserRole.driver;
+    try {
+      final doc = await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
+
+      final roleStr = doc.data()?['role'] as String?;
+      if (roleStr != null) {
+        role = roleStr == 'traveler' ? UserRole.traveler : UserRole.driver;
+        await prefs.setString(_keyRole, roleStr);
+      }
+    } catch (_) {
+      // لو حصل خطأ، نستخدم الـ cached role
+      if (cachedRole != null) {
+        role = cachedRole;
+      }
     }
 
     return (token: freshToken, role: role);
+  }
+
+  // تحديث Token في الخلفية دون توقف المستخدم
+  Future<void> _refreshTokenInBackground(
+    User firebaseUser,
+    SharedPreferences prefs,
+  ) async {
+    try {
+      final freshToken = await firebaseUser.getIdToken(true) ?? '';
+      await prefs.setString('auth_token', freshToken);
+    } catch (_) {
+      // تجاهل الأخطاء في الخلفية
+    }
   }
 }

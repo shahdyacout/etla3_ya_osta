@@ -1,4 +1,4 @@
-import '../entities/user_role.dart';
+import 'package:etla3_ya_osta/core/entities/user_role_entity.dart';
 
 abstract class AuthRepository {
   Future<String> login(String phone);

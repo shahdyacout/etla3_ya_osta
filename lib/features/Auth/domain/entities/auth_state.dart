@@ -1,5 +1,5 @@
-import 'user_role.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/entities/user_role_entity.dart';
 
 class AuthState {
   final bool isLoading;
