@@ -1,26 +1,24 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
-import '../../domain/entities/user_role.dart';
-import '../provider/auth_provider.dart';
+import 'package:etla3_ya_osta/core/entities/user_role_entity.dart';
+import '../cubit/auth_cubit.dart';
 
-class RoleSelectionScreen extends ConsumerStatefulWidget {
+class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({super.key});
 
   @override
-  ConsumerState<RoleSelectionScreen> createState() =>
-      _RoleSelectionScreenState();
+  State<RoleSelectionScreen> createState() => _RoleSelectionScreenState();
 }
 
-class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
+class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
   UserRole? _selectedRole;
 
   Future<void> _onContinue() async {
     if (_selectedRole == null) return;
 
-    await ref.read(authProvider.notifier).selectRole(_selectedRole!);
+    await context.read<AuthCubit>().selectRole(_selectedRole!);
 
     if (!mounted) return;
 
@@ -140,14 +138,14 @@ class _RoleCard extends StatelessWidget {
                     color: AppColors.primary.withOpacity(0.15),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
-                  )
+                  ),
                 ]
               : [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
-                  )
+                  ),
                 ],
         ),
         child: Row(
@@ -204,11 +202,7 @@ class _RoleCard extends StatelessWidget {
                   color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check,
-                  size: 14,
-                  color: Colors.white,
-                ),
+                child: const Icon(Icons.check, size: 14, color: Colors.white),
               ),
             ),
           ],
@@ -222,10 +216,7 @@ class _ContinueButton extends StatelessWidget {
   final bool isEnabled;
   final VoidCallback onPressed;
 
-  const _ContinueButton({
-    required this.isEnabled,
-    required this.onPressed,
-  });
+  const _ContinueButton({required this.isEnabled, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

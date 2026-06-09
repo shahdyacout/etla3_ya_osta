@@ -2,7 +2,6 @@ import 'package:etla3_ya_osta/core/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
-import '../../domain/entities/trip_rating.dart';
 
 class RatingScreen extends StatefulWidget {
   final String tripId;

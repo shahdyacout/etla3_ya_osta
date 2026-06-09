@@ -1,0 +1,76 @@
+warning: in the working copy of 'android/app/src/main/res/drawable-v21/launch_background.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'android/app/src/main/res/drawable/launch_background.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/android/app/src/main/res/drawable-v21/launch_background.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/android/app/src/main/res/drawable/launch_background.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/android/app/src/main/res/values-night/styles.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/android/app/src/main/res/values/styles.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/ios/Runner/Base.lproj/LaunchScreen.storyboard', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/ios/Runner/Info.plist', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/lib/features/Auth/presentation/screens/splash_screen.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/lib/main.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/linux/flutter/generated_plugin_registrant.cc', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/linux/flutter/generated_plugin_registrant.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/linux/flutter/generated_plugins.cmake', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/macos/Flutter/GeneratedPluginRegistrant.swift', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/pubspec.yaml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/web/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/windows/flutter/generated_plugin_registrant.cc', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/windows/flutter/generated_plugin_registrant.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'etla3_ya_osta/windows/flutter/generated_plugins.cmake', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'ios/Runner/Base.lproj/LaunchScreen.storyboard', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'pubspec.yaml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'web/index.html', LF will be replaced by CRLF the next time Git touches it
+ .../main/res/drawable-v21/launch_background.xml    |  13 [32m+[m[31m-[m
+ .../src/main/res/drawable/launch_background.xml    |  13 [32m+[m[31m-[m
+ .../main/res/drawable-v21/launch_background.xml    |  15 [32m+[m[31m-[m
+ .../src/main/res/drawable/launch_background.xml    |  15 [32m+[m[31m-[m
+ .../app/src/main/res/values-night/styles.xml       |   4 [32m+[m
+ .../android/app/src/main/res/values/styles.xml     |   4 [32m+[m
+ .../LaunchImage.imageset/Contents.json             |  10 [32m+[m[31m-[m
+ .../LaunchImage.imageset/LaunchImage.png           | Bin [31m68[m -> [32m9661[m bytes
+ .../LaunchImage.imageset/LaunchImage@2x.png        | Bin [31m68[m -> [32m23002[m bytes
+ .../LaunchImage.imageset/LaunchImage@3x.png        | Bin [31m68[m -> [32m20740[m bytes
+ .../ios/Runner/Base.lproj/LaunchScreen.storyboard  |  19 [32m+[m[31m-[m
+ etla3_ya_osta/ios/Runner/Info.plist                | 128 [32m++++[m[31m----[m
+ etla3_ya_osta/lib/core/router/app_router.dart      |  16 [32m+[m[31m-[m
+ .../Auth/data/repo/auth_repository_impl.dart       |  17 [32m+[m[31m-[m
+ .../Auth/data/repo/rating_repository_impl.dart     |   5 [32m+[m[31m-[m
+ .../features/Auth/domain/entities/auth_state.dart  |   8 [32m+[m[31m-[m
+ .../features/Auth/domain/entities/trip_rating.dart |  14 [31m-[m
+ .../features/Auth/domain/entities/user_role.dart   |   5 [31m-[m
+ .../domain/repo interface/auth_repository.dart     |   4 [32m+[m[31m-[m
+ .../domain/repo interface/rating_repository.dart   |   4 [32m+[m[31m-[m
+ .../Auth/domain/usecases/rate_trip_usecase.dart    |   5 [32m+[m[31m-[m
+ .../Auth/domain/usecases/select_role_usecase.dart  |   4 [32m+[m[31m-[m
+ .../Auth/presentation/provider/auth_provider.dart  | 104 [31m-------[m
+ .../presentation/screens/driver_home_screen.dart   |  16 [32m+[m[31m-[m
+ .../Auth/presentation/screens/otp_screen.dart      |  66 [32m++[m[31m--[m
+ .../presentation/screens/phone_input_screen.dart   |  18 [32m+[m[31m-[m
+ .../screens/role_selection_screen.dart             |  33 [32m+[m[31m-[m
+ .../Auth/presentation/screens/splash_screen.dart   | 335 [32m++++++++++++++++[m[31m-----[m
+ .../presentation/screens/traveler_home_screen.dart |  19 [32m+[m[31m-[m
+ etla3_ya_osta/lib/main.dart                        |  23 [32m+[m[31m-[m
+ etla3_ya_osta/pubspec.lock                         | 128 [32m++++++++[m
+ etla3_ya_osta/pubspec.yaml                         |  15 [32m+[m
+ etla3_ya_osta/web/index.html                       | 107 [32m++++++[m[31m-[m
+ .../LaunchImage.imageset/LaunchImage.png           | Bin [31m68[m -> [32m9661[m bytes
+ .../LaunchImage.imageset/LaunchImage@2x.png        | Bin [31m68[m -> [32m23002[m bytes
+ .../LaunchImage.imageset/LaunchImage@3x.png        | Bin [31m68[m -> [32m20740[m bytes
+ ios/Runner/Base.lproj/LaunchScreen.storyboard      |   4 [32m+[m[31m-[m
+ .../Auth/data/repo/auth_repository_impl.dart       |   9 [32m+[m[31m-[m
+ .../Auth/data/repo/rating_repository_impl.dart     |   5 [32m+[m[31m-[m
+ lib/features/Auth/domain/entities/auth_state.dart  |   8 [32m+[m[31m-[m
+ .../domain/repo interface/auth_repository.dart     |   4 [32m+[m[31m-[m
+ .../domain/repo interface/rating_repository.dart   |   4 [32m+[m[31m-[m
+ .../Auth/domain/usecases/rate_trip_usecase.dart    |   5 [32m+[m[31m-[m
+ .../Auth/domain/usecases/select_role_usecase.dart  |   4 [32m+[m[31m-[m
+ .../Auth/presentation/provider/auth_provider.dart  |  34 [32m+[m[31m--[m
+ .../Auth/presentation/screens/otp_screen.dart      |  54 [32m++[m[31m--[m
+ .../Auth/presentation/screens/rating_screen.dart   |   1 [31m-[m
+ .../screens/role_selection_screen.dart             |  20 [32m+[m[31m-[m
+ .../Auth/presentation/screens/splash_screen.dart   |  14 [32m+[m[31m-[m
+ pubspec.lock                                       | 128 [32m++++++++[m
+ pubspec.yaml                                       |  16 [32m+[m
+ web/index.html                                     |  40 [32m+++[m
+ 52 files changed, 969 insertions(+), 548 deletions(-)

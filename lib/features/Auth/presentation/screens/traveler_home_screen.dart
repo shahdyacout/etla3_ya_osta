@@ -1,15 +1,14 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
-import '../provider/auth_provider.dart';
+import '../cubit/auth_cubit.dart';
 
-class TravelerHomeScreen extends ConsumerWidget {
+class TravelerHomeScreen extends StatelessWidget {
   const TravelerHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -25,7 +24,7 @@ class TravelerHomeScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: AppColors.textLight),
-            onPressed: () => _onLogout(context, ref),
+            onPressed: () => _onLogout(context),
           ),
         ],
       ),
@@ -41,10 +40,7 @@ class TravelerHomeScreen extends ConsumerWidget {
             Navigator.pushNamed(
               context,
               AppRouter.ratingScreen,
-              arguments: {
-                'tripId': 'trip_123',
-                'driverName': 'Mohamed Ahmed',
-              },
+              arguments: {'tripId': 'trip_123', 'driverName': 'Mohamed Ahmed'},
             );
           },
           child: const Text(
@@ -56,16 +52,14 @@ class TravelerHomeScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _onLogout(BuildContext context, WidgetRef ref) async {
-    // بنعمل logout من الـ provider
-    await ref.read(authProvider.notifier).logout();
+  Future<void> _onLogout(BuildContext context) async {
+    await context.read<AuthCubit>().logout();
 
     if (!context.mounted) return;
 
-    // بنمسح الـ stack كامل ونرجع للـ splash
     Navigator.pushNamedAndRemoveUntil(
       context,
-      AppRouter.splash,
+      AppRouter.roleSelection,
       (route) => false,
     );
   }
