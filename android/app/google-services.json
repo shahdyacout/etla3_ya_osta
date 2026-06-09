@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "897993564379",
+    "project_id": "masar-app-f9283",
+    "storage_bucket": "masar-app-f9283.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897993564379:android:c47c80c78ce72ed4e26cfe",
+        "android_client_info": {
+          "package_name": "com.example.etla3_ya_osta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDETFJrKjHXUFkELhZD1mcQclr2WLctCto"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
