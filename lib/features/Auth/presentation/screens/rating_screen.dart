@@ -103,7 +103,7 @@ class _RatingScreenState extends State<RatingScreen> {
   void _navigateHome() {
     Navigator.pushNamedAndRemoveUntil(
       context,
-      AppRouter.travelerHome,
+      AppRouter.destinations,
       (route) => false,
     );
   }

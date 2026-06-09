@@ -6,7 +6,7 @@ class TripEntity {
   final String destinationName;
   final String departurePoint;
   final String status;
-  final int price;
+  final double price;
   final int availableSeats;
   final int occupiedSeats;
 

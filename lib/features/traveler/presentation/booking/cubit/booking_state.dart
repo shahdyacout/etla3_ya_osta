@@ -1,0 +1,35 @@
+import '../../../../../core/entities/booking_entity.dart';
+import '../../../../../core/entities/trip_entity.dart';
+abstract class BookingState {}
+
+class BookingInitial extends BookingState {}
+
+class BookingLoaded extends BookingState {
+  final TripEntity trip;
+  final int selectedSeats;
+
+  BookingLoaded({
+    required this.trip,
+    this.selectedSeats = 1,
+  });
+
+  double get total => trip.price * selectedSeats;
+}
+
+class BookingLoading extends BookingState {
+  final BookingLoaded previousData;
+
+  BookingLoading(this.previousData);
+}
+
+class BookingSuccess extends BookingState {
+  final BookingEntity booking;
+
+  BookingSuccess(this.booking);
+}
+
+class BookingError extends BookingState {
+  final String message;
+
+  BookingError(this.message);
+}

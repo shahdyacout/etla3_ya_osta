@@ -7,7 +7,7 @@ abstract class TravelerRepository {
 
   Future<List<TripEntity>> getTrips(String destinationId);
 
-  Future<void> bookTrip({
+  Future<BookingEntity> bookTrip({
     required String tripId,
     required String travelerId,
     required int seatNumber,

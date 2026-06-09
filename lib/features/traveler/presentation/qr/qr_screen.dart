@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import '../../../../core/entities/booking_entity.dart';
 
 class QrScreen extends StatelessWidget {
-  final String bookingId;
+  final BookingEntity booking;
 
-  const QrScreen({super.key, required this.bookingId});
+  const QrScreen({super.key, required this.booking});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +59,7 @@ class QrScreen extends StatelessWidget {
                 children: [
                   // الـ QR Code الفعلي
                   QrImageView(
-                    data: bookingId,
+                    data: booking.bookingId,
                     size: 180,
                     embeddedImageStyle: const QrEmbeddedImageStyle(size: Size(40, 40)),
                   ),
@@ -66,7 +67,15 @@ class QrScreen extends StatelessWidget {
                   const Text("Booking ID", style: TextStyle(color: Colors.grey, fontSize: 12)),
                   const SizedBox(height: 4),
                   // كود تجريبي من الصورة
-                  const Text("MSR-9HCK1Z", style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                  Text(
+                    booking.bookingId,
+                    style: const TextStyle(
+                      color: textColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
                 ],
               ),
             ),

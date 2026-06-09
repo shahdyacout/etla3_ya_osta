@@ -1,3 +1,4 @@
+import '../../../../core/entities/booking_entity.dart';
 import '../repo interface/traveler_repository.dart';
 
 class BookTripUseCase {
@@ -5,7 +6,7 @@ class BookTripUseCase {
 
   BookTripUseCase(this.repo);
 
-  Future<void> call({
+  Future<BookingEntity> call({
     required String tripId,
     required String travelerId,
     required int seatNumber,
@@ -17,3 +18,4 @@ class BookTripUseCase {
     );
   }
 }
+

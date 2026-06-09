@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/di/service_locator.dart';
-import 'features/traveler/presentation/cubit/traveler_cubit.dart';
+import 'features/traveler/presentation/booking/cubit/booking_cubit.dart';
+import 'features/traveler/presentation/destination/cubit/destinations_cubit.dart';
+import 'features/traveler/presentation/trips/cubit/trips_cubit.dart';
 import 'firebase_options.dart';
 import 'core/entities/user_role_entity.dart';
 import 'core/router/app_router.dart';
@@ -20,7 +22,11 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => createAuthCubit()),
-        // أضف هنا Cubit/Bloc جديد لاحقًا
+        BlocProvider(
+          create: (_) => sl<DestinationsCubit>()..loadDestinations(),
+        ),
+        BlocProvider(create: (_) => sl<TripsCubit>()),
+        BlocProvider(create: (_) => sl<BookingCubit>()),
       ],
       child: const MasarApp(),
     ),
@@ -32,17 +38,11 @@ class MasarApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<TravelerCubit>(create: (context) => sl<TravelerCubit>()),
-        // all cubits here
-      ],
-      child: MaterialApp(
-        title: 'Masar',
-        debugShowCheckedModeBanner: false,
-        home: const AuthGate(),
-        onGenerateRoute: AppRouter.generateRoute,
-      ),
+    return MaterialApp(
+      title: 'Masar',
+      debugShowCheckedModeBanner: false,
+      home: const AuthGate(),
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
 }

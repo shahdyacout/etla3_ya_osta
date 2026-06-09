@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../dto/booking_dto.dart';
 import '../dto/destination_dto.dart';
 import '../dto/trip_dto.dart';
 import 'traveler_remote_data_source.dart';
@@ -31,7 +32,7 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
   }
 
   @override
-  Future<void> bookTrip({
+  Future<BookingDto> bookTrip({
     required String tripId,
     required String travelerId,
     required int seatNumber,
@@ -48,8 +49,17 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
     });
 
     await firestore.collection('trips').doc(tripId).update({
-      "availableSeats": FieldValue.increment(-1),
-      "occupiedSeats": FieldValue.increment(1),
+      "availableSeats": FieldValue.increment(-seatNumber),
+      "occupiedSeats": FieldValue.increment(seatNumber),
     });
+
+    return BookingDto(
+      bookingId: bookingRef.id,
+      tripId: tripId,
+      travelerId: travelerId,
+      seatNumber: seatNumber,
+      status: "confirmed",
+      createdAt: DateTime.now(),
+    );
   }
 }
