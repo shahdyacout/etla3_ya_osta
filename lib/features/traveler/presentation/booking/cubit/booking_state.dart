@@ -1,5 +1,6 @@
 import '../../../../../core/entities/booking_entity.dart';
 import '../../../../../core/entities/trip_entity.dart';
+
 abstract class BookingState {}
 
 class BookingInitial extends BookingState {}
@@ -9,11 +10,14 @@ class BookingLoaded extends BookingState {
   final int selectedSeats;
   final String? error;
 
-  BookingLoaded({
-    required this.trip,
-    this.selectedSeats = 1,
-    this.error,
-  });
+  BookingLoaded({required this.trip, this.selectedSeats = 1, this.error});
+
+  BookingLoaded copyWith({TripEntity? trip, int? selectedSeats}) {
+    return BookingLoaded(
+      trip: trip ?? this.trip,
+      selectedSeats: selectedSeats ?? this.selectedSeats,
+    );
+  }
 
   double get total => trip.price * selectedSeats;
 }

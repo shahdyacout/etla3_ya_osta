@@ -1,7 +1,6 @@
 
-
 import '../../../../core/entities/booking_entity.dart';
-import '../repo interface/traveler_repository.dart';
+import '../repository/traveler_repository.dart';
 
 class GetBookingUseCase {
   final TravelerRepository repo;

@@ -1,5 +1,5 @@
 import '../../../../core/entities/trip_entity.dart';
-import '../repo interface/traveler_repository.dart';
+import '../repository/traveler_repository.dart';
 
 class GetTripsUseCase {
   final TravelerRepository repo;

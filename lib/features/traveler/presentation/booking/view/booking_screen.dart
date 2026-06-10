@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/entities/trip_entity.dart';
@@ -245,7 +246,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       : () {
                     context.read<BookingCubit>().book(
                       tripId: bookingState.trip.tripId,
-                      travelerId: "user123",
+                      travelerId: FirebaseAuth.instance.currentUser!.uid,
                       seatNumber: bookingState.selectedSeats,
                     );
                   },

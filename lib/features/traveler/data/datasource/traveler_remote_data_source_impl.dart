@@ -36,15 +36,6 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
   }) async {
     final bookingRef = firestore.collection('bookings').doc();
 
-    await bookingRef.set({
-      "bookingId": bookingRef.id,
-      "tripId": tripId,
-      "travelerId": travelerId,
-      "seatNumber": seatNumber,
-      "status": "confirmed",
-      "createdAt": FieldValue.serverTimestamp(),
-    });
-
     await firestore.runTransaction((transaction) async {
       final tripRef = firestore.collection('trips').doc(tripId);
 
@@ -60,6 +51,15 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
         'availableSeats': availableSeats - seatNumber,
         'occupiedSeats': tripSnapshot['occupiedSeats'] + seatNumber,
       });
+
+      transaction.set(bookingRef, {
+        'bookingId': bookingRef.id,
+        'tripId': tripId,
+        'travelerId': travelerId,
+        'seatNumber': seatNumber,
+        'status': 'confirmed',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     });
 
     return BookingDto(
@@ -70,5 +70,16 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
       status: "confirmed",
       createdAt: DateTime.now(),
     );
+  }
+
+  @override
+  Future<BookingDto> getBooking(String bookingId) async {
+    final doc = await firestore.collection('bookings').doc(bookingId).get();
+
+    if (!doc.exists) {
+      throw Exception('Booking not found');
+    }
+
+    return BookingDto.fromJson(doc.id, doc.data()!);
   }
 }

@@ -1,4 +1,3 @@
-
 import '../dto/booking_dto.dart';
 import '../dto/destination_dto.dart';
 import '../dto/trip_dto.dart';
@@ -13,4 +12,6 @@ abstract class TravelerRemoteDataSource {
     required String travelerId,
     required int seatNumber,
   });
+
+  Future<BookingDto> getBooking(String bookingId);
 }
