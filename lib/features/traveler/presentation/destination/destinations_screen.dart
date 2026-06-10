@@ -24,8 +24,6 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
       cubit.loadDestinations();
     }
   }
-
-
   @override
   Widget build(BuildContext context) {
     // الألوان المستوحاة من التصميم
