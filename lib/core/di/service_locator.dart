@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
-import '../../features/traveler/data/data source/traveler_remote_data_source.dart';
-import '../../features/traveler/data/data source/traveler_remote_data_source_impl.dart';
+import '../../features/traveler/data/datasource/traveler_remote_data_source.dart';
+import '../../features/traveler/data/datasource/traveler_remote_data_source_impl.dart';
 import '../../features/traveler/data/repo/traveler_repository_impl.dart';
-import '../../features/traveler/domain/repo interface/traveler_repository.dart';
-import '../../features/traveler/domain/usecase/book_trip_usecase.dart';
-import '../../features/traveler/domain/usecase/get_destinations_usecase.dart';
-import '../../features/traveler/domain/usecase/get_trips_usecase.dart';
+import '../../features/traveler/domain/repository/traveler_repository.dart';
+import '../../features/traveler/domain/usecases/book_trip_usecase.dart';
+import '../../features/traveler/domain/usecases/get_destinations_usecase.dart';
+import '../../features/traveler/domain/usecases/get_trips_usecase.dart';
 import '../../features/traveler/presentation/booking/cubit/booking_cubit.dart';
 import '../../features/traveler/presentation/destination/cubit/destinations_cubit.dart';
 import '../../features/traveler/presentation/trips/cubit/trips_cubit.dart';

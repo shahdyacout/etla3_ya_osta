@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/entities/trip_entity.dart';
-import '../../../domain/usecase/book_trip_usecase.dart';
+import '../../../domain/usecases/book_trip_usecase.dart';
 import 'booking_state.dart';
 
 class BookingCubit extends Cubit<BookingState> {
@@ -25,10 +25,9 @@ class BookingCubit extends Cubit<BookingState> {
       if (seats > current.trip.availableSeats) return;
 
       emit(
-        BookingLoaded(
-          trip: current.trip,
-          selectedSeats: seats,
-        ),
+          current.copyWith(
+            selectedSeats: seats,
+          )
       );
 
     }
