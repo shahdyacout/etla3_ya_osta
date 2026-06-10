@@ -1,6 +1,6 @@
 
 import '../../../../core/entities/destination_entity.dart';
-import '../repo interface/traveler_repository.dart';
+import '../repository/traveler_repository.dart';
 
 class GetDestinationsUseCase {
   final TravelerRepository repo;
