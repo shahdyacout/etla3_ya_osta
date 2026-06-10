@@ -20,6 +20,10 @@ class BookingCubit extends Cubit<BookingState> {
     final current = state;
 
     if (current is BookingLoaded) {
+      if (seats < 1) return;
+
+      if (seats > current.trip.availableSeats) return;
+
       emit(
         BookingLoaded(
           trip: current.trip,
@@ -36,9 +40,9 @@ class BookingCubit extends Cubit<BookingState> {
   }) async {
     final current = state;
 
-    if (current is BookingLoaded) {
-      emit(BookingLoading(current));
-    }
+    if (current is! BookingLoaded) return;
+
+    emit(BookingLoading(current));
 
     try {
       final booking = await bookTrip(
@@ -47,11 +51,16 @@ class BookingCubit extends Cubit<BookingState> {
         seatNumber: seatNumber,
       );
 
-      emit(
-        BookingSuccess(booking),
-      );
+      emit(BookingSuccess(booking));
     } catch (e) {
-      emit(BookingError(e.toString()));
+      emit(current);
+
+      emit(
+        BookingError(
+          e.toString(),
+        ),
+      );
     }
   }
+
 }

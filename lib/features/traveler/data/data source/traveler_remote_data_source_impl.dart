@@ -4,7 +4,6 @@ import '../dto/destination_dto.dart';
 import '../dto/trip_dto.dart';
 import 'traveler_remote_data_source.dart';
 
-
 class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
   final FirebaseFirestore firestore;
 
@@ -26,9 +25,7 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
         .where('destinationId', isEqualTo: destinationId)
         .get();
 
-    return res.docs
-        .map((e) => TripDto.fromJson(e.id, e.data()))
-        .toList();
+    return res.docs.map((e) => TripDto.fromJson(e.id, e.data())).toList();
   }
 
   @override
@@ -48,9 +45,21 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
       "createdAt": FieldValue.serverTimestamp(),
     });
 
-    await firestore.collection('trips').doc(tripId).update({
-      "availableSeats": FieldValue.increment(-seatNumber),
-      "occupiedSeats": FieldValue.increment(seatNumber),
+    await firestore.runTransaction((transaction) async {
+      final tripRef = firestore.collection('trips').doc(tripId);
+
+      final tripSnapshot = await transaction.get(tripRef);
+
+      final availableSeats = tripSnapshot['availableSeats'];
+
+      if (seatNumber > availableSeats) {
+        throw Exception('Only $availableSeats seats available');
+      }
+
+      transaction.update(tripRef, {
+        'availableSeats': availableSeats - seatNumber,
+        'occupiedSeats': tripSnapshot['occupiedSeats'] + seatNumber,
+      });
     });
 
     return BookingDto(

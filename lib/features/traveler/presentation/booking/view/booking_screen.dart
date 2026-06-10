@@ -10,18 +10,13 @@ import '../cubit/booking_state.dart';
 class BookingScreen extends StatefulWidget {
   final TripEntity trip;
 
-  const BookingScreen({
-    super.key,
-    required this.trip,
-  });
+  const BookingScreen({super.key, required this.trip});
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  int seatCount = 1;
-
   @override
   void initState() {
     super.initState();
@@ -30,7 +25,6 @@ class _BookingScreenState extends State<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.background,
 
@@ -43,7 +37,10 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         title: const Text(
           "Booking Details",
-          style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
 
@@ -58,9 +55,9 @@ class _BookingScreenState extends State<BookingScreen> {
           }
 
           if (state is BookingError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
 
@@ -72,9 +69,7 @@ class _BookingScreenState extends State<BookingScreen> {
               : null;
 
           if (bookingState == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final isLoading = state is BookingLoading;
@@ -139,31 +134,52 @@ class _BookingScreenState extends State<BookingScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   IconButton(
-                                    onPressed: seatCount > 1
+                                    onPressed: bookingState.selectedSeats > 1
                                         ? () {
-                                      setState(() => seatCount--);
-
                                       context
                                           .read<BookingCubit>()
-                                          .changeSeats(seatCount);
+                                          .changeSeats(
+                                        bookingState.selectedSeats -
+                                            1,
+                                      );
                                     }
                                         : null,
                                     icon: const Icon(Icons.remove),
                                   ),
 
-                                  Text(
-                                    "$seatCount",
-                                    style: const TextStyle(fontSize: 20),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "${bookingState.selectedSeats}",
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        "${bookingState.trip
+                                            .availableSeats} seats available",
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
 
                                   IconButton(
-                                    onPressed: () {
-                                      setState(() => seatCount++);
-
+                                    onPressed:
+                                    bookingState.selectedSeats <
+                                        bookingState.trip.availableSeats
+                                        ? () {
                                       context
                                           .read<BookingCubit>()
-                                          .changeSeats(seatCount);
-                                    },
+                                          .changeSeats(
+                                        bookingState.selectedSeats +
+                                            1,
+                                      );
+                                    }
+                                        : null,
                                     icon: const Icon(Icons.add),
                                   ),
                                 ],
@@ -182,10 +198,12 @@ class _BookingScreenState extends State<BookingScreen> {
                                 MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Base fare ($seatCount seats)",
+                                    "Base fare (${bookingState
+                                        .selectedSeats} seats)",
                                   ),
                                   Text(
-                                    "${bookingState.trip.price * seatCount} EGP",
+                                    "${bookingState.trip.price *
+                                        bookingState.selectedSeats} EGP",
                                   ),
                                 ],
                               ),
@@ -228,7 +246,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     context.read<BookingCubit>().book(
                       tripId: bookingState.trip.tripId,
                       travelerId: "user123",
-                      seatNumber: seatCount,
+                      seatNumber: bookingState.selectedSeats,
                     );
                   },
                 ),
@@ -248,10 +266,7 @@ class _BookingScreenState extends State<BookingScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(10),
-            blurRadius: 8,
-          ),
+          BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 8),
         ],
       ),
       child: child,

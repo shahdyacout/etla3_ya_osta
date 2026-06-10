@@ -7,10 +7,12 @@ class BookingInitial extends BookingState {}
 class BookingLoaded extends BookingState {
   final TripEntity trip;
   final int selectedSeats;
+  final String? error;
 
   BookingLoaded({
     required this.trip,
     this.selectedSeats = 1,
+    this.error,
   });
 
   double get total => trip.price * selectedSeats;
