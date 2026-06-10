@@ -30,6 +30,7 @@ class BookingCubit extends Cubit<BookingState> {
           selectedSeats: seats,
         ),
       );
+
     }
   }
 
