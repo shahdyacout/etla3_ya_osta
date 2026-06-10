@@ -3,21 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'core/entities/user_role_entity.dart';
-import 'core/router/app_router.dart';
-import 'core/theme/app_colors.dart';
+import 'Core/entities/user_role_entity.dart';
+import 'Core/router/app_router.dart';
+import 'Core/theme/app_colors.dart';
+import 'Core/di/injection.dart';
 import 'features/Auth/presentation/cubit/auth_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await setupDependencies();
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => createAuthCubit()),
-        // أضف هنا Cubit/Bloc جديد لاحقًا
       ],
       child: const MasarApp(),
     ),

@@ -131,7 +131,7 @@ class _PhoneField extends StatelessWidget {
         counterText: '',
         hintText: '01XXXXXXXXX',
         hintStyle: TextStyle(
-          color: AppColors.textLight.withOpacity(0.5),
+          color: AppColors.textLight.withValues(alpha: 0.5),
           letterSpacing: 1.5,
         ),
         prefixIcon: Container(
@@ -209,7 +209,7 @@ class _SendButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

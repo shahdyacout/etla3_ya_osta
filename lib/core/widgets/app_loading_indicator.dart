@@ -18,7 +18,7 @@ class AppLoadingIndicator extends StatelessWidget {
       height: size,
       child: CircularProgressIndicator(
         strokeWidth: 2.5,
-        color: color ?? AppColors.primary.withOpacity(0.6),
+        color: color ?? AppColors.primary.withValues(alpha: 0.6),
       ),
     );
   }

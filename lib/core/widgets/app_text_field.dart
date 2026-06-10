@@ -40,7 +40,7 @@ class AppTextField extends StatelessWidget {
         counterText: '',
         hintText: hintText,
         hintStyle: TextStyle(
-          color: AppColors.textLight.withOpacity(0.5),
+          color: AppColors.textLight.withValues(alpha: 0.5),
         ),
         prefixIcon: prefixIcon,
         filled: true,

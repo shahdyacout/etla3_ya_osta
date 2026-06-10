@@ -122,7 +122,7 @@ class _DriverInfoSection extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.15),
+            color: AppColors.primary.withValues(alpha: 0.15),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -223,7 +223,7 @@ class _TagsSection extends StatelessWidget {
             decoration: BoxDecoration(
               // المختار بيتلون بالـ primary
               color: isSelected
-                  ? AppColors.primary.withOpacity(0.12)
+                  ? AppColors.primary.withValues(alpha: 0.12)
                   : Colors.white,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
