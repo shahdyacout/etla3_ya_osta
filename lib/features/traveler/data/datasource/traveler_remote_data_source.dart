@@ -5,7 +5,7 @@ import '../dto/trip_dto.dart';
 abstract class TravelerRemoteDataSource {
   Future<List<DestinationDto>> getDestinations();
 
-  Future<List<TripDto>> getTrips(String destinationId);
+  Stream<List<TripDto>> getTripsStream(String destinationId);
 
   Future<BookingDto> bookTrip({
     required String tripId,

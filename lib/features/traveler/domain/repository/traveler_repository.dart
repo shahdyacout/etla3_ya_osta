@@ -5,7 +5,7 @@ import '../../../../core/entities/trip_entity.dart';
 abstract class TravelerRepository {
   Future<List<DestinationEntity>> getDestinations();
 
-  Future<List<TripEntity>> getTrips(String destinationId);
+  Stream<List<TripEntity>> getTripsStream(String destinationId);
 
   Future<BookingEntity> bookTrip({
     required String tripId,

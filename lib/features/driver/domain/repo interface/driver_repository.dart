@@ -9,5 +9,6 @@ abstract class DriverRepository {
   Stream<QuerySnapshot<Map<String, dynamic>>> getActiveTripStream(String driverId);
   Future<Either<Failure, void>> verifyPassengerBooking(String bookingId, String driverId);
   Future<Either<Failure, void>> updateTripStatus(String tripId, String status);
+  Future<Either<Failure, void>> startBoardingWithSeats(String tripId, int availableSeats);
   Future<Either<Failure, void>> endTrip(String tripId, String driverId, int passengers, double earnings);
 }

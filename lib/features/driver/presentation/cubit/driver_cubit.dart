@@ -164,13 +164,13 @@ class DriverCubit extends Cubit<DriverState> {
     );
   }
 
-  Future<void> startBoarding() async {
+  Future<void> startBoarding(int availableSeats) async {
     if (state.activeTripId == null) return;
     emit(state.copyWith(isLoading: true));
-    final result = await updateTripStatusUseCase(state.activeTripId!, 'boarding');
+    final result = await repository.startBoardingWithSeats(state.activeTripId!, availableSeats);
     result.fold(
       (failure) => emit(state.copyWith(isLoading: false, failure: failure)),
-      (_) => emit(state.copyWith(isLoading: false)),
+      (_) => emit(state.copyWith(isLoading: false, tripStatus: DriverTripStatus.boarding)),
     );
   }
 

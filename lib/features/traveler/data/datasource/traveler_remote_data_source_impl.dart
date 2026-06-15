@@ -19,13 +19,15 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
   }
 
   @override
-  Future<List<TripDto>> getTrips(String destinationId) async {
-    final res = await firestore
+  Stream<List<TripDto>> getTripsStream(String destinationId) {
+    return firestore
         .collection('trips')
         .where('destinationId', isEqualTo: destinationId)
-        .get();
-
-    return res.docs.map((e) => TripDto.fromJson(e.id, e.data())).toList();
+        .where('status', isEqualTo: 'boarding')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((e) => TripDto.fromJson(e.id, e.data()))
+            .toList());
   }
 
   @override

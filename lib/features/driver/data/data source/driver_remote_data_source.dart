@@ -7,6 +7,7 @@ abstract class DriverRemoteDataSource {
   Stream<QuerySnapshot<Map<String, dynamic>>> getActiveTripStream(String driverId);
   Future<void> verifyPassengerBooking(String bookingId, String driverId);
   Future<void> updateTripStatus(String tripId, String status);
+  Future<void> startBoardingWithSeats(String tripId, int availableSeats);
   Future<void> endTrip(String tripId, String driverId, int passengers, double earnings);
 }
 
@@ -78,6 +79,9 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
           'passengers': [],
           'createdAt': FieldValue.serverTimestamp(),
           'route': 'Cairo Central → Alexandria',
+          'destinationId': 'alexandria',
+          'destinationName': 'Alexandria',
+          'departurePoint': 'Cairo Central Station',
           'price': 50.0,
         });
       }
@@ -141,7 +145,8 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
       final int occupied = tripData['occupiedSeats'] ?? 0;
 
       if (passengers.contains(bookingId)) throw Exception('Passenger already checked in');
-      if (occupied >= 14) throw Exception('Vehicle is full');
+      final availableSeats = tripData['availableSeats'] as int? ?? 14;
+      if (occupied >= availableSeats) throw Exception('Vehicle is full');
 
       passengers.add(bookingId);
       transaction.update(tripDoc.reference, {
@@ -157,6 +162,16 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
   @override
   Future<void> updateTripStatus(String tripId, String status) async {
     await firestore.collection('trips').doc(tripId).update({'status': status});
+  }
+
+  @override
+  Future<void> startBoardingWithSeats(String tripId, int availableSeats) async {
+    await firestore.collection('trips').doc(tripId).update({
+      'status': 'boarding',
+      'availableSeats': availableSeats,
+      'occupiedSeats': 0,
+      'passengers': [],
+    });
   }
 
   @override
