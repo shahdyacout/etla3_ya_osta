@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/router/app_router.dart';
-import '../../../../core/theme/app_colors.dart';
-import 'cubit/destinations_cubit.dart';
-import 'cubit/destinations_state.dart';
+import '../../../../../../core/router/app_router.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../cubit/destinations_cubit.dart';
+import '../cubit/destinations_state.dart';
 
 
 class DestinationsScreen extends StatefulWidget {
@@ -48,39 +48,39 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
       body: Column(
         children: [
           // جزء المحطة الحالية والـ Map View
-          Container(
-            width: double.infinity,
-            color: const Color(0xFFE5E9E8),
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Column(
-              children: [
-                // زرار المحطة الحالية
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 10, offset: const Offset(0, 4)),
-                    ],
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.navigation_outlined, color:  AppColors.primary, size: 20),
-                      SizedBox(width: 8),
-                      Text("Cairo Central Station", style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // أيقونة الخريطة
-                const Icon(Icons.location_on, color:  AppColors.primary, size: 50),
-                const SizedBox(height: 4),
-                const Text("Map View", style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w500)),
-              ],
-            ),
-          ),
+          // Container(
+          //   width: double.infinity,
+          //   color: const Color(0xFFE5E9E8),
+          //   padding: const EdgeInsets.symmetric(vertical: 24),
+          //   child: Column(
+          //     children: [
+          //       // زرار المحطة الحالية
+          //       Container(
+          //         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          //         decoration: BoxDecoration(
+          //           color: Colors.white,
+          //           borderRadius: BorderRadius.circular(30),
+          //           boxShadow: [
+          //             BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 10, offset: const Offset(0, 4)),
+          //           ],
+          //         ),
+          //         child: const Row(
+          //           mainAxisSize: MainAxisSize.min,
+          //           children: [
+          //             Icon(Icons.navigation_outlined, color:  AppColors.primary, size: 20),
+          //             SizedBox(width: 8),
+          //             Text("Cairo Central Station", style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w500)),
+          //           ],
+          //         ),
+          //       ),
+          //       const SizedBox(height: 24),
+          //       // أيقونة الخريطة
+          //       const Icon(Icons.location_on, color:  AppColors.primary, size: 50),
+          //       const SizedBox(height: 4),
+          //       const Text("Map View", style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w500)),
+          //     ],
+          //   ),
+          // ),
 
           // جزء البحث والـ Destinations
           Expanded(

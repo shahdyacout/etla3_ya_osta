@@ -1,3 +1,4 @@
+import '../dto/DirectionStepDto.dart';
 import '../dto/booking_dto.dart';
 import '../dto/destination_dto.dart';
 import '../dto/trip_dto.dart';
@@ -14,4 +15,6 @@ abstract class TravelerRemoteDataSource {
   });
 
   Future<BookingDto> getBooking(String bookingId);
+  Future<List<DirectionStepDto>> getLiveDirections();
+
 }

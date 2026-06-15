@@ -1,6 +1,7 @@
 import '../../../../core/entities/booking_entity.dart';
 import '../../../../core/entities/destination_entity.dart';
 import '../../../../core/entities/trip_entity.dart';
+import '../entities/direction_step.dart';
 
 abstract class TravelerRepository {
   Future<List<DestinationEntity>> getDestinations();
@@ -14,4 +15,5 @@ abstract class TravelerRepository {
   });
 
   Future<BookingEntity> getBooking(String bookingId);
+  Future<List<DirectionStep>> getLiveDirections();
 }
