@@ -1,13 +1,20 @@
-import 'package:etla3_ya_osta/features/Auth/presentation/cubit/auth_cubit_provider.dart';
+import 'package:etla3_ya_osta/core/utils/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'core/di/service_locator.dart';
+import 'core/di/injection.dart' hide sl;
+import 'features/traveler/presentation/booking/cubit/booking_cubit.dart';
+import 'features/traveler/presentation/destination/cubit/destinations_cubit.dart';
+import 'features/traveler/presentation/trips/cubit/trips_cubit.dart';
+import 'features/driver/presentation/cubit/driver_cubit.dart';
 import 'firebase_options.dart';
 import 'Core/entities/user_role_entity.dart';
 import 'Core/router/app_router.dart';
 import 'Core/theme/app_colors.dart';
-import 'Core/di/injection.dart';
 import 'features/Auth/presentation/cubit/auth_cubit.dart';
+import 'features/Auth/presentation/cubit/auth_cubit_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,10 +25,20 @@ void main() async {
 
   await setupDependencies();
 
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  await init();
+
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => createAuthCubit()),
+        BlocProvider(
+          create: (_) => sl<DestinationsCubit>()..loadDestinations(),
+        ),
+        BlocProvider(create: (_) => sl<TripsCubit>()),
+        BlocProvider(create: (_) => sl<BookingCubit>()),
+        BlocProvider(create: (_) => sl<DriverCubit>()),
       ],
       child: const MasarApp(),
     ),
@@ -36,6 +53,7 @@ class MasarApp extends StatelessWidget {
     return MaterialApp(
       title: 'Masar',
       debugShowCheckedModeBanner: false,
+      navigatorKey: NotificationService.navigatorKey,
       home: const AuthGate(),
       onGenerateRoute: AppRouter.generateRoute,
     );
@@ -64,7 +82,7 @@ class _AuthGateState extends State<AuthGate> {
     final state = authCubit.state;
     if (state.isAuthenticated && state.role != null) {
       final route = state.role == UserRole.traveler
-          ? AppRouter.travelerHome
+          ? AppRouter.destinations
           : AppRouter.driverHome;
       if (mounted) {
         Navigator.pushReplacementNamed(context, route);

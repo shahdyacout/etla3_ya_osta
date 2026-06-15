@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../Core/error/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/earning_entities.dart';
 import '../../domain/entities/transaction_entities.dart';
 import '../../domain/entities/wallet_entities.dart';

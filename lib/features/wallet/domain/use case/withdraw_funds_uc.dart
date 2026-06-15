@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../Core/error/failures.dart';
+import '../../../../core/error/failures.dart';
 import '../repo interface/i_wallet_repository.dart';
 
 class WithdrawFundsUseCase {

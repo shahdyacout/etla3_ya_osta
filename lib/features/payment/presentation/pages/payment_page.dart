@@ -23,7 +23,7 @@ class PaymentPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الدفع'),
+        title: const Text('Payment'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
@@ -54,7 +54,6 @@ class PaymentPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // معلومات الدفع
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -65,7 +64,7 @@ class PaymentPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'تفاصيل الدفع',
+                      'Payment Details',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -75,9 +74,9 @@ class PaymentPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('المبلغ:'),
+                        const Text('Amount:'),
                         Text(
-                          '$amount جنيه',
+                          '$amount EGP',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -86,7 +85,7 @@ class PaymentPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('رقم الحجز:'),
+                        const Text('Booking ID:'),
                         Text(bookingId),
                       ],
                     ),
@@ -97,7 +96,7 @@ class PaymentPage extends StatelessWidget {
               const SizedBox(height: 32),
 
               const Text(
-                'اختر طريقة الدفع:',
+                'Choose Payment Method:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -106,13 +105,11 @@ class PaymentPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // زرار فيزا
               BlocBuilder<PaymentCubit, PaymentState>(
                 builder: (context, state) {
                   final isLoading = state is PaymentLoading;
                   return Column(
                     children: [
-                      // فيزا
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -128,7 +125,7 @@ class PaymentPage extends StatelessWidget {
                             );
                           },
                           icon: const Icon(Icons.credit_card),
-                          label: const Text('ادفع بـ Visa / Mastercard'),
+                          label: const Text('Pay with Visa / Mastercard'),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.all(16),
                             backgroundColor: Colors.blue,
@@ -139,7 +136,6 @@ class PaymentPage extends StatelessWidget {
 
                       const SizedBox(height: 12),
 
-                      // كاش
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -155,7 +151,7 @@ class PaymentPage extends StatelessWidget {
                             );
                           },
                           icon: const Icon(Icons.phone_android),
-                          label: const Text('ادفع بـ Vodafone / Orange Cash'),
+                          label: const Text('Pay with Vodafone / Orange Cash'),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.all(16),
                             backgroundColor: Colors.red,

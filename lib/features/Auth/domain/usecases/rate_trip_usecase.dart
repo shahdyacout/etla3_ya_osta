@@ -1,7 +1,7 @@
 import 'package:etla3_ya_osta/features/Auth/domain/repo%20interface/rating_repository.dart';
 
 import 'package:etla3_ya_osta/core/entities/trip_rating_entity.dart';
-import '../../../../core/usecase/usecase.dart';
+import 'usecase.dart';
 
 class RateTripUseCase extends UseCase<void, TripRating> {
   final RatingRepository repository;
