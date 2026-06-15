@@ -3,6 +3,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
+
         android:label="etla3_ya_osta"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -27,6 +28,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDETFJrKjHXUFkELhZD1mcQclr2WLctCto" />
     </application>
     <queries>
         <intent>
