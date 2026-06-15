@@ -94,7 +94,7 @@ Future<void> init() async {
   sl.registerFactory(() => TripsCubit(sl()));
   sl.registerFactory(() => BookingCubit(sl()));
   sl.registerFactory(() => DirectionsCubit(sl()));
-}
+
 
   sl.registerFactory(
         () => AuthCubit(
