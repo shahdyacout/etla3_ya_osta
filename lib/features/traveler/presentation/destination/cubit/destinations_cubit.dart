@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/entities/destination_entity.dart';
-import '../../../domain/usecase/get_destinations_usecase.dart';
+import '../../../domain/usecases/get_destinations_usecase.dart';
 import 'destinations_state.dart';
 
 class DestinationsCubit extends Cubit<DestinationsState> {

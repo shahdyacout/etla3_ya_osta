@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/entities/trip_entity.dart';
 import '../../../../../core/router/app_router.dart';
 import '../../../../../core/theme/app_colors.dart';
+import '../../extensions/trip_ui_extension.dart';
 import '../cubit/trips_cubit.dart';
 import '../cubit/trips_state.dart';
 

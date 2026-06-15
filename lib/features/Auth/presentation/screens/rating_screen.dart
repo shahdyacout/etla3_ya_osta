@@ -1,22 +1,23 @@
-// lib/features/Auth/presentation/screens/rating_screen.dart
-
-import 'package:etla3_ya_osta/core/utils/snackbar_helper.dart';
 import 'package:etla3_ya_osta/core/entities/trip_rating_entity.dart';
-import 'package:etla3_ya_osta/features/Auth/data/repo/rating_repository_impl.dart';
+import 'package:etla3_ya_osta/core/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/di/service_locator.dart';
+import '../../domain/usecases/rate_trip_usecase.dart';
 
 class RatingScreen extends StatefulWidget {
   final String tripId;
   final String driverId;
-
+  final String driverName;
+  final String travelerId;
 
   const RatingScreen({
     super.key,
     required this.tripId,
     required this.driverId,
-   
+    required this.driverName,
+    required this.travelerId,
   });
 
   @override
@@ -47,6 +48,8 @@ class _RatingScreenState extends State<RatingScreen> {
           child: Column(
             children: [
               const Spacer(flex: 1),
+              _DriverInfoSection(driverName: widget.driverName),
+              const SizedBox(height: 32),
               _StarsSection(
                 selectedStars: _selectedStars,
                 onStarTapped: (stars) {
@@ -85,34 +88,28 @@ class _RatingScreenState extends State<RatingScreen> {
     });
   }
 
-  Future<void> _onSubmit() async {
+  void _onSubmit() {
     if (_selectedStars == 0) return;
-
     setState(() => _isLoading = true);
 
-    try {
-      final repository = RatingRepositoryImpl();
+    final rating = TripRating(
+      tripId: widget.tripId,
+      driverId: widget.driverId,
+      travelerId: widget.travelerId,
+      stars: _selectedStars,
+      tags: _selectedTags,
+    );
 
-      final rating = TripRating(
-        tripId: widget.tripId,
-        driverId: widget.driverId,
-        stars: _selectedStars,
-        tags: _selectedTags,
-      );
-
-      await repository.submitRating(rating);
-
+    sl<RateTripUseCase>().call(rating).then((_) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-
       SnackbarHelper.showSuccess(context, 'Rating submitted! Thank you ⭐');
-
       _navigateHome();
-    } catch (e) {
+    }).catchError((_) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      SnackbarHelper.showError(context, 'Failed to submit rating. Try again.');
-    }
+      SnackbarHelper.showError(context, 'Failed to submit rating');
+    });
   }
 
   void _onSkip() => _navigateHome();
@@ -125,7 +122,6 @@ class _RatingScreenState extends State<RatingScreen> {
     );
   }
 }
-
 class _DriverInfoSection extends StatelessWidget {
   final String driverName;
 
@@ -170,6 +166,8 @@ class _DriverInfoSection extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────
+
 class _StarsSection extends StatelessWidget {
   final int selectedStars;
   final void Function(int) onStarTapped;
@@ -203,6 +201,8 @@ class _StarsSection extends StatelessWidget {
     );
   }
 }
+
+// ─────────────────────────────────────────
 
 class _TagsSection extends StatelessWidget {
   final List<String> availableTags;
@@ -257,6 +257,8 @@ class _TagsSection extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────
+
 class _SubmitButton extends StatelessWidget {
   final bool isLoading;
   final bool isEnabled;
@@ -304,6 +306,8 @@ class _SubmitButton extends StatelessWidget {
     );
   }
 }
+
+// ─────────────────────────────────────────
 
 class _SkipButton extends StatelessWidget {
   final VoidCallback onTap;

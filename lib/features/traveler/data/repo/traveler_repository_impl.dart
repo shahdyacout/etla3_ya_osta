@@ -1,10 +1,10 @@
-
+import 'package:etla3_ya_osta/features/traveler/domain/entities/direction_step.dart';
 
 import '../../../../core/entities/booking_entity.dart';
 import '../../../../core/entities/destination_entity.dart';
 import '../../../../core/entities/trip_entity.dart';
-import '../../domain/repo interface/traveler_repository.dart';
-import '../data source/traveler_remote_data_source.dart';
+import '../../domain/repository/traveler_repository.dart';
+import '../datasource/traveler_remote_data_source.dart';
 
 class TravelerRepositoryImpl implements TravelerRepository {
   final TravelerRemoteDataSource remote;
@@ -36,6 +36,11 @@ class TravelerRepositoryImpl implements TravelerRepository {
 
   @override
   Future<BookingEntity> getBooking(String bookingId) {
-    throw UnimplementedError();
+    return remote.getBooking(bookingId);
+  }
+
+  @override
+  Future<List<DirectionStep>> getLiveDirections() {
+    return remote.getLiveDirections();
   }
 }
