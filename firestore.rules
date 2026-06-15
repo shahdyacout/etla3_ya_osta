@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Driver Rules
+    match /drivers/{driverId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(driverId);
+    }
+
+    // Trip Rules
+    match /trips/{tripId} {
+      allow read: if isSignedIn();
+      // Only the assigned driver can update the trip status/seats
+      allow update: if isSignedIn() && resource.data.driverId == request.auth.uid;
+      // Creation should ideally be handled by Cloud Functions
+      allow create: if isSignedIn(); 
+    }
+
+    // Booking Rules
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn();
+      // Only the driver assigned to the trip can mark a booking as boarded
+      allow update: if isSignedIn() && 
+        get(/databases/$(database)/documents/trips/$(resource.data.tripId)).data.driverId == request.auth.uid;
+    }
+  }
+}

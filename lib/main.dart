@@ -1,11 +1,14 @@
+import 'package:etla3_ya_osta/core/utils/notification_service.dart';
 import 'package:etla3_ya_osta/features/Auth/presentation/cubit/auth_cubit_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'core/di/service_locator.dart';
 import 'features/traveler/presentation/booking/cubit/booking_cubit.dart';
 import 'features/traveler/presentation/destination/cubit/destinations_cubit.dart';
 import 'features/traveler/presentation/trips/cubit/trips_cubit.dart';
+import 'features/driver/presentation/cubit/driver_cubit.dart';
 import 'firebase_options.dart';
 import 'core/entities/user_role_entity.dart';
 import 'core/router/app_router.dart';
@@ -16,6 +19,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Register background handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   await init();
 
@@ -28,6 +34,7 @@ void main() async {
         ),
         BlocProvider(create: (_) => sl<TripsCubit>()),
         BlocProvider(create: (_) => sl<BookingCubit>()),
+        BlocProvider(create: (_) => sl<DriverCubit>()),
       ],
       child: const MasarApp(),
     ),
@@ -42,6 +49,7 @@ class MasarApp extends StatelessWidget {
     return MaterialApp(
       title: 'Masar',
       debugShowCheckedModeBanner: false,
+      navigatorKey: NotificationService.navigatorKey,
       home: const AuthGate(),
       onGenerateRoute: AppRouter.generateRoute,
     );
