@@ -40,9 +40,13 @@ class TravelerHomeScreen extends StatelessWidget {
             Navigator.pushNamed(
               context,
               AppRouter.ratingScreen,
-              arguments: {'tripId': 'trip_123', 'driverName': 'Mohamed Ahmed'},
-            );
-          },
+               arguments: {
+      'tripId': 'trip_123',
+      'driverId': 'PUT_REAL_DRIVER_UID_HERE',
+      'driverName': 'Mohamed Ahmed',
+    },
+  );
+},
           child: const Text(
             'Test Rating Screen',
             style: TextStyle(color: Colors.white),

@@ -39,13 +39,15 @@ class AppRouter {
       case phoneInput:
         return _buildRoute(const PhoneInputScreen());
       case ratingScreen:
-        final args = settings.arguments as Map<String, String>;
-        return _buildRoute(
-          RatingScreen(
-            tripId: args['tripId']!,
-            driverName: args['driverName']!,
-          ),
-        );
+      final args = settings.arguments as Map<String, String>;
+      return _buildRoute(
+       RatingScreen(
+      tripId: args['tripId']!,
+      driverId: args['driverId']!,
+      driverName: args['driverName']!,
+    ),
+  );
+    
       case trips:
         final destinationId = settings.arguments as String;
         return _buildRoute(TripsScreen(destinationId: destinationId));

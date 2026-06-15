@@ -1,15 +1,21 @@
+// lib/features/Auth/presentation/screens/rating_screen.dart
+
 import 'package:etla3_ya_osta/core/utils/snackbar_helper.dart';
+import 'package:etla3_ya_osta/core/entities/trip_rating_entity.dart';
+import 'package:etla3_ya_osta/features/Auth/data/repo/rating_repository_impl.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 
 class RatingScreen extends StatefulWidget {
   final String tripId;
+  final String driverId;
   final String driverName;
 
   const RatingScreen({
     super.key,
     required this.tripId,
+    required this.driverId,
     required this.driverName,
   });
 
@@ -22,7 +28,6 @@ class _RatingScreenState extends State<RatingScreen> {
   final List<String> _selectedTags = [];
   bool _isLoading = false;
 
-  // الـ tags الثابتة
   static const List<String> _availableTags = [
     'Clean car',
     'On time',
@@ -82,21 +87,35 @@ class _RatingScreenState extends State<RatingScreen> {
     });
   }
 
- void _onSubmit() {
-  if (_selectedStars == 0) return;
+  Future<void> _onSubmit() async {
+    if (_selectedStars == 0) return;
 
-  setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  Future.delayed(const Duration(seconds: 1), () {
-    if (!mounted) return;
-    setState(() => _isLoading = false);
+    try {
+      final repository = RatingRepositoryImpl();
 
+      final rating = TripRating(
+        tripId: widget.tripId,
+        driverId: widget.driverId,
+        stars: _selectedStars,
+        tags: _selectedTags,
+      );
 
-    SnackbarHelper.showSuccess(context, 'Rating submitted! Thank you ⭐');
+      await repository.submitRating(rating);
 
-    _navigateHome();
-  });
-}
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      SnackbarHelper.showSuccess(context, 'Rating submitted! Thank you ⭐');
+
+      _navigateHome();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      SnackbarHelper.showError(context, 'Failed to submit rating. Try again.');
+    }
+  }
 
   void _onSkip() => _navigateHome();
 
@@ -108,6 +127,7 @@ class _RatingScreenState extends State<RatingScreen> {
     );
   }
 }
+
 class _DriverInfoSection extends StatelessWidget {
   final String driverName;
 
@@ -117,7 +137,6 @@ class _DriverInfoSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Avatar
         Container(
           width: 80,
           height: 80,
@@ -153,8 +172,6 @@ class _DriverInfoSection extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────
-
 class _StarsSection extends StatelessWidget {
   final int selectedStars;
   final void Function(int) onStarTapped;
@@ -179,7 +196,6 @@ class _StarsSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Icon(
               isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
-              // النجمة المختارة بتبقى amber والفاضية رمادية
               color: isSelected ? const Color(0xFFFFC107) : AppColors.border,
               size: isSelected ? 48 : 44,
             ),
@@ -189,8 +205,6 @@ class _StarsSection extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _TagsSection extends StatelessWidget {
   final List<String> availableTags;
@@ -221,7 +235,6 @@ class _TagsSection extends StatelessWidget {
               vertical: 10,
             ),
             decoration: BoxDecoration(
-              // المختار بيتلون بالـ primary
               color: isSelected
                   ? AppColors.primary.withOpacity(0.12)
                   : Colors.white,
@@ -245,8 +258,6 @@ class _TagsSection extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _SubmitButton extends StatelessWidget {
   final bool isLoading;
@@ -295,8 +306,6 @@ class _SubmitButton extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────
 
 class _SkipButton extends StatelessWidget {
   final VoidCallback onTap;

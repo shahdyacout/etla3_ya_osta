@@ -38,6 +38,7 @@ dependencies:
   get_it: ^9.2.1
   qr_flutter: ^4.1.0
   cupertino_icons: ^1.0.8
+  flutter_native_splash: ^2.4.0 
 
 dev_dependencies:
   flutter_test:
@@ -91,3 +92,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_native_splash:
+  color: "#F9F9F9"
+  color_dark: "#F9F9F9"
+  image: assets/splash/masar_native_splash.png
+  android: true
+  ios: true
+  fullscreen: true
+  android_12:
+    color: "#F9F9F9"
+    icon_background_color: "#F9F9F9"
+    image: assets/splash/masar_native_splash.png
