@@ -44,7 +44,7 @@ class AppRouter {
        RatingScreen(
       tripId: args['tripId']!,
       driverId: args['driverId']!,
-      driverName: args['driverName']!,
+     
     ),
   );
     

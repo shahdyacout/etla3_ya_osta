@@ -10,13 +10,13 @@ import '../../../../core/router/app_router.dart';
 class RatingScreen extends StatefulWidget {
   final String tripId;
   final String driverId;
-  final String driverName;
+
 
   const RatingScreen({
     super.key,
     required this.tripId,
     required this.driverId,
-    required this.driverName,
+   
   });
 
   @override
@@ -47,8 +47,6 @@ class _RatingScreenState extends State<RatingScreen> {
           child: Column(
             children: [
               const Spacer(flex: 1),
-              _DriverInfoSection(driverName: widget.driverName),
-              const SizedBox(height: 32),
               _StarsSection(
                 selectedStars: _selectedStars,
                 onStarTapped: (stars) {
