@@ -12,8 +12,8 @@ import '../../features/traveler/presentation/booking/view/booking_screen.dart';
 import '../../features/traveler/presentation/destination/view/destinations_screen.dart';
 import '../../features/traveler/presentation/qr/qr_screen.dart';
 import '../../features/traveler/presentation/trips/view/trips_screen.dart';
-import '../entities/booking_entity.dart';
-import '../entities/trip_entity.dart';
+import '../../core/entities/booking_entity.dart';
+import '../../core/entities/trip_entity.dart';
 
 class AppRouter {
   AppRouter._();
