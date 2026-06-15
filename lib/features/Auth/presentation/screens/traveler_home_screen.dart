@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/di/injection.dart';
+import '../../../payment/presentation/cubit/payment_cubit.dart';
+import '../../../payment/presentation/pages/payment_page.dart';
 import '../cubit/auth_cubit.dart';
 
 class TravelerHomeScreen extends StatelessWidget {
@@ -29,23 +32,78 @@ class TravelerHomeScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // زرار Test Rating
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.ratingScreen,
+                    arguments: {
+                      'tripId': 'trip_123',
+                      'driverName': 'Mohamed Ahmed'
+                    },
+                  );
+                },
+                child: const Text(
+                  'Test Rating Screen',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // زرار الدفع
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: () => _openPayment(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: const Icon(Icons.payment, color: Colors.white),
+                  label: const Text(
+                    'ادفع إيداع الرحلة',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          onPressed: () {
-            Navigator.pushNamed(
-              context,
-              AppRouter.ratingScreen,
-              arguments: {'tripId': 'trip_123', 'driverName': 'Mohamed Ahmed'},
-            );
-          },
-          child: const Text(
-            'Test Rating Screen',
-            style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  void _openPayment(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => sl<PaymentCubit>(),
+          child: const PaymentPage(
+            bookingId: 'test_booking_123',
+            amount: 50.0,
+            travelerName: 'مسافر تجريبي',
+            travelerPhone: '+201000000000',
           ),
         ),
       ),
@@ -60,7 +118,7 @@ class TravelerHomeScreen extends StatelessWidget {
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRouter.roleSelection,
-      (route) => false,
+          (route) => false,
     );
   }
 }

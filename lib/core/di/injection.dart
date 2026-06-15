@@ -9,6 +9,7 @@ import '../../features/wallet/domain/use case/get_earnings_uc.dart';
 import '../../features/wallet/domain/use case/get_transactions_uc.dart';
 import '../../features/wallet/domain/use case/withdraw_funds_uc.dart';
 import '../../features/wallet/presentation/cubit/wallet_cubit.dart';
+import '../../features/payment/di/payment_injection.dart';
 
 final sl = GetIt.instance;
 
@@ -45,4 +46,7 @@ Future<void> setupDependencies() async {
       withdrawFundsUseCase:   sl(),
     ),
   );
+
+  // Payment
+  setupPaymentInjection(sl);
 }
