@@ -75,6 +75,7 @@ class AppRouter {
       case liveDirections:
         return _buildRoute(LiveDirectionsScreen());
 
+
       default:
         return _buildRoute(const RoleSelectionScreen());
     }
