@@ -4,6 +4,9 @@ import 'package:etla3_ya_osta/features/Auth/presentation/screens/phone_input_scr
 import 'package:etla3_ya_osta/features/Auth/presentation/screens/rating_screen.dart';
 import 'package:etla3_ya_osta/features/Auth/presentation/screens/role_selection_screen.dart';
 import 'package:etla3_ya_osta/features/traveler/presentation/directions/view/live_directions_screen.dart';
+import 'package:etla3_ya_osta/features/driver/presentation/view/passenger_loading_screen.dart';
+import 'package:etla3_ya_osta/features/driver/presentation/view/trip_in_progress_screen.dart';
+import 'package:etla3_ya_osta/features/driver/presentation/view/trip_summary_screen.dart';
 import 'package:flutter/material.dart';
 import '../../features/traveler/presentation/booking/view/booking_screen.dart';
 import '../../features/traveler/presentation/destination/view/destinations_screen.dart';
@@ -25,6 +28,9 @@ class AppRouter {
   static const String booking = '/booking';
   static const String qr = '/qr';
   static const String liveDirections = '/live-directions';
+  static const String passengerLoading = '/passenger-loading';
+  static const String tripInProgress = '/trip-in-progress';
+  static const String tripSummary = '/trip-summary';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -34,6 +40,12 @@ class AppRouter {
         return _buildRoute(const DestinationsScreen());
       case driverHome:
         return _buildRoute(const DriverHomeScreen());
+      case passengerLoading:
+        return _buildRoute(const PassengerLoadingScreen());
+      case tripInProgress:
+        return _buildRoute(const TripInProgressScreen());
+      case tripSummary:
+        return _buildRoute(const TripSummaryScreen());
       case otpScreen:
         final phone = settings.arguments as String;
         return _buildRoute(OtpScreen(phoneNumber: phone));
@@ -44,7 +56,9 @@ class AppRouter {
         return _buildRoute(
           RatingScreen(
             tripId: args['tripId']!,
+            driverId: args['driverId']!,
             driverName: args['driverName']!,
+            travelerId: args['travelerId']!,
           ),
         );
       case trips:
@@ -60,6 +74,11 @@ class AppRouter {
 
       case liveDirections:
         return _buildRoute(LiveDirectionsScreen());
+        return _buildRoute(
+          QrScreen(
+            booking: booking,
+          ),
+        );
 
       default:
         return _buildRoute(const RoleSelectionScreen());
