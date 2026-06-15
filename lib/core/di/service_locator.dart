@@ -68,7 +68,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<RatingRepository>(
-        () => RatingRepositoryImpl(sl()),
+        () => RatingRepositoryImpl(),
   );
 
   // Traveler Use Cases
