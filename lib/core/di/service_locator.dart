@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../features/Auth/presentation/cubit/auth_cubit.dart';
+import '../../features/driver/presentation/cubit/driver_cubit.dart';
 import '../../features/traveler/data/datasource/traveler_remote_data_source.dart';
 import '../../features/traveler/data/datasource/traveler_remote_data_source_impl.dart';
 import '../../features/traveler/data/repo/traveler_repository_impl.dart';
@@ -22,9 +24,6 @@ import '../../features/driver/domain/use case/go_online_use_case.dart';
 import '../../features/driver/domain/use case/verify_passenger_use_case.dart';
 import '../../features/driver/domain/use case/update_trip_status_use_case.dart';
 import '../../features/driver/domain/use case/end_trip_use_case.dart';
-import '../../features/driver/presentation/cubit/driver_cubit.dart';
-
-import '../../features/Auth/presentation/cubit/auth_cubit.dart';
 import '../../features/Auth/domain/repo interface/auth_repository.dart';
 import '../../features/Auth/data/repo/auth_repository_impl.dart';
 import '../../features/Auth/domain/usecases/login_usecase.dart';
@@ -94,8 +93,6 @@ Future<void> init() async {
   sl.registerFactory(() => TripsCubit(sl()));
   sl.registerFactory(() => BookingCubit(sl()));
   sl.registerFactory(() => DirectionsCubit(sl()));
-}
-
   sl.registerFactory(
         () => AuthCubit(
       loginUseCase: sl(),
@@ -116,3 +113,6 @@ Future<void> init() async {
     ),
   );
 }
+
+
+

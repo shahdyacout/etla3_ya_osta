@@ -74,11 +74,6 @@ class AppRouter {
 
       case liveDirections:
         return _buildRoute(LiveDirectionsScreen());
-        return _buildRoute(
-          QrScreen(
-            booking: booking,
-          ),
-        );
 
       default:
         return _buildRoute(const RoleSelectionScreen());
