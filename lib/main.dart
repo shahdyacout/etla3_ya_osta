@@ -28,6 +28,7 @@ void main() async {
         ),
         BlocProvider(create: (_) => sl<TripsCubit>()),
         BlocProvider(create: (_) => sl<BookingCubit>()),
+
       ],
       child: const MasarApp(),
     ),
@@ -40,6 +41,7 @@ class MasarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       title: 'Masar',
       debugShowCheckedModeBanner: false,
       home: const AuthGate(),

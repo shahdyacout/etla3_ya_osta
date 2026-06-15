@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/entities/booking_entity.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class QrScreen extends StatelessWidget {
@@ -108,7 +109,7 @@ class QrScreen extends StatelessWidget {
                     elevation: 0,
                   ),
                   onPressed: () {
-                    // الانتقال لشاشة الـ Live Directions لاحقاً
+                    Navigator.pushNamed(context, AppRouter.liveDirections);
                   },
                   icon: const Icon(Icons.navigation_outlined, color: Colors.white, size: 18),
                   label: const Text("View Route Guide", style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
