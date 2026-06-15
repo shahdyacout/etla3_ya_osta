@@ -3,13 +3,13 @@ import 'package:etla3_ya_osta/features/Auth/presentation/screens/otp_screen.dart
 import 'package:etla3_ya_osta/features/Auth/presentation/screens/phone_input_screen.dart';
 import 'package:etla3_ya_osta/features/Auth/presentation/screens/rating_screen.dart';
 import 'package:etla3_ya_osta/features/Auth/presentation/screens/role_selection_screen.dart';
+import 'package:etla3_ya_osta/features/traveler/presentation/directions/view/live_directions_screen.dart';
 import 'package:etla3_ya_osta/features/driver/presentation/view/passenger_loading_screen.dart';
 import 'package:etla3_ya_osta/features/driver/presentation/view/trip_in_progress_screen.dart';
 import 'package:etla3_ya_osta/features/driver/presentation/view/trip_summary_screen.dart';
 import 'package:flutter/material.dart';
-
 import '../../features/traveler/presentation/booking/view/booking_screen.dart';
-import '../../features/traveler/presentation/destination/destinations_screen.dart';
+import '../../features/traveler/presentation/destination/view/destinations_screen.dart';
 import '../../features/traveler/presentation/qr/qr_screen.dart';
 import '../../features/traveler/presentation/trips/view/trips_screen.dart';
 import '../../core/entities/booking_entity.dart';
@@ -27,6 +27,7 @@ class AppRouter {
   static const String trips = '/trips';
   static const String booking = '/booking';
   static const String qr = '/qr';
+  static const String liveDirections = '/live-directions';
   static const String passengerLoading = '/passenger-loading';
   static const String tripInProgress = '/trip-in-progress';
   static const String tripSummary = '/trip-summary';
@@ -66,17 +67,14 @@ class AppRouter {
 
       case booking:
         final trip = settings.arguments as TripEntity;
-        return _buildRoute(
-          BookingScreen(trip: trip),
-        );
-
+        return _buildRoute(BookingScreen(trip: trip));
       case qr:
         final booking = settings.arguments as BookingEntity;
-        return _buildRoute(
-          QrScreen(
-            booking: booking,
-          ),
-        );
+        return _buildRoute(QrScreen(booking: booking));
+
+      case liveDirections:
+        return _buildRoute(LiveDirectionsScreen());
+
 
       default:
         return _buildRoute(const RoleSelectionScreen());

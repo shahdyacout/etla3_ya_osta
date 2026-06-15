@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../features/Auth/presentation/cubit/auth_cubit.dart';
+import '../../features/driver/presentation/cubit/driver_cubit.dart';
 import '../../features/traveler/data/datasource/traveler_remote_data_source.dart';
 import '../../features/traveler/data/datasource/traveler_remote_data_source_impl.dart';
 import '../../features/traveler/data/repo/traveler_repository_impl.dart';
@@ -10,6 +13,7 @@ import '../../features/traveler/domain/usecases/get_destinations_usecase.dart';
 import '../../features/traveler/domain/usecases/get_trips_usecase.dart';
 import '../../features/traveler/presentation/booking/cubit/booking_cubit.dart';
 import '../../features/traveler/presentation/destination/cubit/destinations_cubit.dart';
+import '../../features/traveler/presentation/directions/cubit/directions_cubit.dart';
 import '../../features/traveler/presentation/trips/cubit/trips_cubit.dart';
 
 import '../../features/driver/data/data source/driver_remote_data_source.dart';
@@ -20,9 +24,6 @@ import '../../features/driver/domain/use case/go_online_use_case.dart';
 import '../../features/driver/domain/use case/verify_passenger_use_case.dart';
 import '../../features/driver/domain/use case/update_trip_status_use_case.dart';
 import '../../features/driver/domain/use case/end_trip_use_case.dart';
-import '../../features/driver/presentation/cubit/driver_cubit.dart';
-
-import '../../features/Auth/presentation/cubit/auth_cubit.dart';
 import '../../features/Auth/domain/repo interface/auth_repository.dart';
 import '../../features/Auth/data/repo/auth_repository_impl.dart';
 import '../../features/Auth/domain/usecases/login_usecase.dart';
@@ -38,13 +39,15 @@ final sl = GetIt.instance;
 Future<void> init() async {
   // Firestore
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  // Dio
+  sl.registerLazySingleton(() => Dio());
 
   // Utils
   sl.registerLazySingleton(() => NotificationService());
 
   // Data Sources
   sl.registerLazySingleton<TravelerRemoteDataSource>(
-        () => TravelerRemoteDataSourceImpl(sl()),
+    () => TravelerRemoteDataSourceImpl(sl<FirebaseFirestore>(), sl<Dio>()),
   );
 
   sl.registerLazySingleton<DriverRemoteDataSource>(
@@ -53,7 +56,7 @@ Future<void> init() async {
 
   // Repositories
   sl.registerLazySingleton<TravelerRepository>(
-        () => TravelerRepositoryImpl(sl()),
+    () => TravelerRepositoryImpl(sl()),
   );
 
   sl.registerLazySingleton<DriverRepository>(
@@ -89,6 +92,7 @@ Future<void> init() async {
   sl.registerFactory(() => DestinationsCubit(sl()));
   sl.registerFactory(() => TripsCubit(sl()));
   sl.registerFactory(() => BookingCubit(sl()));
+  sl.registerFactory(() => DirectionsCubit(sl()));
 
   sl.registerFactory(
         () => AuthCubit(
@@ -110,3 +114,6 @@ Future<void> init() async {
     ),
   );
 }
+
+
+
