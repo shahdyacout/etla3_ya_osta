@@ -11,6 +11,9 @@ class BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -30,7 +33,7 @@ class BalanceCard extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -39,9 +42,9 @@ class BalanceCard extends StatelessWidget {
               Icon(
                 Icons.wallet,
                 color: Colors.white,
-                size: 28,
+                size: isSmallScreen ? 24 : 28,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: isSmallScreen ? 6 : 8),
               const Text(
                 'Total Balance',
                 style: TextStyle(
@@ -52,7 +55,7 @@ class BalanceCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmallScreen ? 12 : 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -60,9 +63,9 @@ class BalanceCard extends StatelessWidget {
             children: [
               Text(
                 wallet.balance.toStringAsFixed(0),
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 36,
+                  fontSize: isSmallScreen ? 28 : 36,
                   fontWeight: FontWeight.w700,
                 ),
               ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+  import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubit/wallet_cubit.dart';
@@ -26,6 +26,9 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -61,27 +64,23 @@ class _WalletPageState extends State<WalletPage> {
               }
 
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Balance Card
                     if (state.wallet != null)
                       BalanceCard(wallet: state.wallet!),
-                    const SizedBox(height: 24),
+                    SizedBox(height: isSmallScreen ? 16 : 24),
 
-                    // Insurance Deposit Card
-                    _buildInsuranceCard(state),
-                    const SizedBox(height: 24),
+                    _buildInsuranceCard(state, isSmallScreen),
+                    SizedBox(height: isSmallScreen ? 16 : 24),
 
-                    // Earnings Stats
                     if (state.earnings != null)
                       EarningWidgets(earnings: state.earnings!),
-                    const SizedBox(height: 24),
+                    SizedBox(height: isSmallScreen ? 16 : 24),
 
-                    // Transaction History
                     const TransactionTitle(),
-                    const SizedBox(height: 12),
+                    SizedBox(height: isSmallScreen ? 8 : 12),
 
                     if (state.transactions.isEmpty)
                       Center(
@@ -110,9 +109,8 @@ class _WalletPageState extends State<WalletPage> {
                             .toList(),
                       ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: isSmallScreen ? 16 : 24),
 
-                    // Withdraw Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -145,7 +143,7 @@ class _WalletPageState extends State<WalletPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: isSmallScreen ? 16 : 24),
                   ],
                 ),
               );
@@ -156,12 +154,12 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
-  Widget _buildInsuranceCard(WalletState state) {
+  Widget _buildInsuranceCard(WalletState state, bool isSmallScreen) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
         child: Column(
           children: [
             Row(
@@ -169,8 +167,8 @@ class _WalletPageState extends State<WalletPage> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.shield, color: Colors.teal[700], size: 28),
-                    const SizedBox(width: 12),
+                    Icon(Icons.shield, color: Colors.teal[700], size: isSmallScreen ? 24 : 28),
+                    SizedBox(width: isSmallScreen ? 8 : 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -201,7 +199,7 @@ class _WalletPageState extends State<WalletPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: isSmallScreen ? 8 : 12),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(

@@ -9,6 +9,8 @@ import 'features/traveler/presentation/booking/cubit/booking_cubit.dart';
 import 'features/traveler/presentation/destination/cubit/destinations_cubit.dart';
 import 'features/traveler/presentation/trips/cubit/trips_cubit.dart';
 import 'features/driver/presentation/cubit/driver_cubit.dart';
+import 'features/wallet/presentation/cubit/wallet_cubit.dart';
+import 'features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'firebase_options.dart';
 import 'Core/entities/user_role_entity.dart';
 import 'Core/router/app_router.dart';
@@ -40,6 +42,8 @@ void main() async {
         BlocProvider(create: (_) => sl<BookingCubit>()),
 
         BlocProvider(create: (_) => sl<DriverCubit>()),
+        BlocProvider(create: (_) => sl<WalletCubit>()),
+        BlocProvider(create: (_) => sl<NotificationsCubit>()),
       ],
       child: const MasarApp(),
     ),

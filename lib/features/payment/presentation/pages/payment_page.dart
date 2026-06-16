@@ -21,6 +21,9 @@ class PaymentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Payment'),
@@ -50,7 +53,7 @@ class PaymentPage extends StatelessWidget {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -93,7 +96,7 @@ class PaymentPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: isSmallScreen ? 24 : 32),
 
               const Text(
                 'Choose Payment Method:',
@@ -103,7 +106,7 @@ class PaymentPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: isSmallScreen ? 12 : 16),
 
               BlocBuilder<PaymentCubit, PaymentState>(
                 builder: (context, state) {
@@ -161,7 +164,7 @@ class PaymentPage extends StatelessWidget {
                       ),
 
                       if (isLoading) ...[
-                        const SizedBox(height: 24),
+                        SizedBox(height: isSmallScreen ? 16 : 24),
                         const Center(child: CircularProgressIndicator()),
                       ],
                     ],

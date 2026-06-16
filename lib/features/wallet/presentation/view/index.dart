@@ -1,6 +1,6 @@
 // Pages
-export 'pages/wallet_pages.dart';
-export 'pages/transaction_pages.dart';
+export 'pages/wallet_page.dart';
+export 'pages/transaction_page.dart';
 
 // Widgets
 export 'widgets/balance_card.dart';

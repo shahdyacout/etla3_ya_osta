@@ -37,8 +37,9 @@ import '../utils/notification_service.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  // Firestore
-  sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  if (!sl.isRegistered<FirebaseFirestore>()) {
+    sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  }
   // Dio
   sl.registerLazySingleton(() => Dio());
 

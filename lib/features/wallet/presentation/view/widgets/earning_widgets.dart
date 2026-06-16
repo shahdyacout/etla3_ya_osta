@@ -13,6 +13,9 @@ class EarningWidgets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -20,24 +23,26 @@ class EarningWidgets extends StatelessWidget {
           'Today\'s Performance',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: isSmallScreen ? 8 : 12),
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.4,
+          childAspectRatio: isSmallScreen ? 1.2 : 1.4,
           children: [
             _buildEarningCard(
               icon: Icons.trending_up,
               label: 'Today\'s Earnings',
               amount: '${earnings.dailyEarnings.toStringAsFixed(0)} EGP',
+              isSmallScreen: isSmallScreen,
             ),
             _buildEarningCard(
               icon: Icons.calendar_today,
               label: 'Weekly Earnings',
               amount: '${earnings.weeklyEarnings.toStringAsFixed(0)} EGP',
+              isSmallScreen: isSmallScreen,
             ),
           ],
         ),
@@ -49,12 +54,13 @@ class EarningWidgets extends StatelessWidget {
     required IconData icon,
     required String label,
     required String amount,
+    required bool isSmallScreen,
   }) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,15 +68,15 @@ class EarningWidgets extends StatelessWidget {
             Icon(
               icon,
               color: Colors.teal,
-              size: 28,
+              size: isSmallScreen ? 24 : 28,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   amount,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 14 : 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

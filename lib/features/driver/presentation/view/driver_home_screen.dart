@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../Auth/presentation/cubit/auth_cubit.dart';
 import '../../../../core/router/app_router.dart';
 import '../cubit/driver_cubit.dart';
 import '../cubit/driver_state.dart';
@@ -100,6 +98,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+
     return Scaffold(
       backgroundColor: lightBackground,
       appBar: AppBar(
@@ -115,6 +116,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: darkText),
+            onPressed: () => Navigator.pushNamed(context, AppRouter.notifications),
+          ),
+        ],
       ),
       body: BlocConsumer<DriverCubit, DriverState>(
         listenWhen: (prev, curr) => prev.isOnline != curr.isOnline,
@@ -124,12 +131,15 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
         builder: (context, state) {
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 16 : 20.0,
+              vertical: isSmallScreen ? 12 : 16.0,
+            ),
             child: Column(
               children: [
                 if (_showSuccessBanner) ...[
                   _buildSuccessBanner(),
-                  const SizedBox(height: 16),
+                  SizedBox(height: isSmallScreen ? 12 : 16),
                 ],
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 500),
@@ -137,24 +147,24 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                     return FadeTransition(opacity: animation, child: child);
                   },
                   child: state.isOnline
-                      ? _buildOnlineStatusCard(context, state)
-                      : _buildOfflineStatusCard(context, state),
+                      ? _buildOnlineStatusCard(context, state, isSmallScreen)
+                      : _buildOfflineStatusCard(context, state, isSmallScreen),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: isSmallScreen ? 16 : 20),
                 if (state.isOnline) ...[
                   FadeTransition(
                     opacity: _queueFade,
                     child: SlideTransition(
                       position: _queueSlide,
-                      child: _buildQueuePositionCard(state),
+                      child: _buildQueuePositionCard(state, isSmallScreen),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: isSmallScreen ? 16 : 20),
                 ],
-                _buildPerformanceCard(state),
-                const SizedBox(height: 24),
-                _buildBottomButtons(context, state),
-                const SizedBox(height: 16),
+                _buildPerformanceCard(state, isSmallScreen),
+                SizedBox(height: isSmallScreen ? 16 : 24),
+                _buildBottomButtons(context, state, isSmallScreen),
+                SizedBox(height: isSmallScreen ? 12 : 16),
               ],
             ),
           );
@@ -172,9 +182,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: successGreen.withOpacity(0.08),
+            color: successGreen.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: successGreen.withOpacity(0.2)),
+            border: Border.all(color: successGreen.withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
@@ -199,17 +209,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
-  Widget _buildOfflineStatusCard(BuildContext context, DriverState state) {
+  Widget _buildOfflineStatusCard(BuildContext context, DriverState state, bool isSmallScreen) {
     return Container(
       key: const ValueKey('offline_card'),
       width: double.infinity,
-      padding: const EdgeInsets.all(32.0),
+      padding: EdgeInsets.all(isSmallScreen ? 24 : 32.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -217,11 +227,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             "Go Online",
             style: TextStyle(
               color: darkText,
-              fontSize: 24,
+              fontSize: isSmallScreen ? 20 : 24,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -233,7 +243,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
               fontSize: 14,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: isSmallScreen ? 16 : 24),
           SizedBox(
             width: double.infinity,
             height: 54,
@@ -270,17 +280,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
-  Widget _buildOnlineStatusCard(BuildContext context, DriverState state) {
+  Widget _buildOnlineStatusCard(BuildContext context, DriverState state, bool isSmallScreen) {
     return Container(
       key: const ValueKey('online_card'),
       width: double.infinity,
-      padding: const EdgeInsets.all(32.0),
+      padding: EdgeInsets.all(isSmallScreen ? 24 : 32.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -288,11 +298,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             "You're Online",
             style: TextStyle(
               color: darkText,
-              fontSize: 24,
+              fontSize: isSmallScreen ? 20 : 24,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -304,7 +314,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
               fontSize: 14,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: isSmallScreen ? 16 : 24),
           SizedBox(
             width: double.infinity,
             height: 54,
@@ -341,17 +351,20 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
-  Widget _buildQueuePositionCard(DriverState state) {
+  Widget _buildQueuePositionCard(DriverState state, bool isSmallScreen) {
     bool isReady = state.queuePosition == 1;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+      padding: EdgeInsets.symmetric(
+        vertical: isSmallScreen ? 24 : 32,
+        horizontal: isSmallScreen ? 16 : 24,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -362,9 +375,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
           Icon(
             isReady ? Icons.check_circle_outline : Icons.group_outlined,
             color: isReady ? successGreen : Colors.grey,
-            size: 40,
+            size: isSmallScreen ? 32 : 40,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isSmallScreen ? 8 : 12),
           Text(
             isReady ? "Your vehicle is ready for boarding" : "Queue Position",
             style: TextStyle(
@@ -376,9 +389,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
           const SizedBox(height: 4),
           Text(
             "#${state.queuePosition == 0 ? 4 : state.queuePosition}",
-            style: const TextStyle(
+            style: TextStyle(
               color: primarySage,
-              fontSize: 48,
+              fontSize: isSmallScreen ? 36 : 48,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -390,7 +403,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
               fontSize: 14,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: isSmallScreen ? 12 : 20),
           if (isReady)
             SizedBox(
               width: double.infinity,
@@ -420,7 +433,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
@@ -437,16 +450,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
-  Widget _buildPerformanceCard(DriverState state) {
+  Widget _buildPerformanceCard(DriverState state, bool isSmallScreen) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 24.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -455,42 +468,46 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Today's Performance",
             style: TextStyle(
               color: darkText,
-              fontSize: 18,
+              fontSize: isSmallScreen ? 16 : 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: isSmallScreen ? 12 : 20),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            childAspectRatio: 1.1,
+            childAspectRatio: isSmallScreen ? 1.3 : 1.1,
             children: [
               _buildStatItem(
                 icon: Icons.trending_up,
                 value: state.completedTrips.toString(),
                 label: "Completed Trips",
+                isSmallScreen: isSmallScreen,
               ),
               _buildStatItem(
                 icon: Icons.account_balance_wallet_outlined,
                 value: "${state.totalEarnings.toStringAsFixed(0)} EGP",
                 label: "Total Earnings",
+                isSmallScreen: isSmallScreen,
               ),
               _buildStatItem(
                 icon: Icons.access_time,
                 value: "${state.activeHours}h",
                 label: "Active Hours",
+                isSmallScreen: isSmallScreen,
               ),
               _buildStatItem(
                 icon: Icons.group_outlined,
                 value: "${state.avgRating}★",
                 label: "Avg Rating",
+                isSmallScreen: isSmallScreen,
               ),
             ],
           ),
@@ -503,26 +520,27 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     required IconData icon,
     required String value,
     required String label,
+    required bool isSmallScreen,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(isSmallScreen ? 12 : 16.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.0),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: 0.1),
         ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: primarySage, size: 24),
-          const SizedBox(height: 12),
+          Icon(icon, color: primarySage, size: isSmallScreen ? 20 : 24),
+          SizedBox(height: isSmallScreen ? 8 : 12),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               color: darkText,
-              fontSize: 18,
+              fontSize: isSmallScreen ? 14 : 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -540,7 +558,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
-  Widget _buildBottomButtons(BuildContext context, DriverState state) {
+  Widget _buildBottomButtons(BuildContext context, DriverState state, bool isSmallScreen) {
     return Row(
       children: [
         Expanded(
@@ -555,13 +573,15 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                 ),
               );
             } : null,
+            isSmallScreen: isSmallScreen,
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: isSmallScreen ? 12 : 16),
         Expanded(
           child: _buildActionButton(
             label: "View Wallet",
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, AppRouter.driverWallet),
+            isSmallScreen: isSmallScreen,
           ),
         ),
       ],
@@ -571,6 +591,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
   Widget _buildActionButton({
     required String label,
     required VoidCallback? onPressed,
+    required bool isSmallScreen,
   }) {
     final isEnabled = onPressed != null;
 
@@ -580,7 +601,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-          color: isEnabled ? Colors.grey.withOpacity(0.2) : Colors.grey.withOpacity(0.1),
+          color: isEnabled ? Colors.grey.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.1),
         ),
       ),
       child: TextButton(
@@ -593,9 +614,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
         child: Text(
           label,
           style: TextStyle(
-            color: isEnabled ? darkText : Colors.grey.withOpacity(0.5),
+            color: isEnabled ? darkText : Colors.grey.withValues(alpha: 0.5),
             fontWeight: FontWeight.bold,
-            fontSize: 15,
+            fontSize: isSmallScreen ? 13 : 15,
           ),
         ),
       ),

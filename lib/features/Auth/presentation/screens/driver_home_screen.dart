@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../wallet/presentation/cubit/wallet_cubit.dart';
-import '../../../wallet/presentation/view/pages/wallet_pages.dart';
+import '../../../wallet/presentation/view/pages/wallet_page.dart';
 import '../cubit/auth_cubit.dart';
 import '../../../../core/di/service_locator.dart';
 
