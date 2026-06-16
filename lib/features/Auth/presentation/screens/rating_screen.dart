@@ -9,12 +9,17 @@ import '../../domain/usecases/rate_trip_usecase.dart';
 class RatingScreen extends StatefulWidget {
   final String tripId;
   final String driverId;
+
+
+
+
   final String travelerId;
 
   const RatingScreen({
     super.key,
     required this.tripId,
     required this.driverId,
+
     required this.travelerId,
   });
 
@@ -46,7 +51,7 @@ class _RatingScreenState extends State<RatingScreen> {
           child: Column(
             children: [
               const Spacer(flex: 1),
-              const SizedBox(height: 32),
+
               _StarsSection(
                 selectedStars: _selectedStars,
                 onStarTapped: (stars) {
@@ -132,7 +137,9 @@ class _DriverInfoSection extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.15),
+
+            color: AppColors.primary.withAlpha(15),
+
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -231,7 +238,7 @@ class _TagsSection extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColors.primary.withOpacity(0.12)
+                  ? AppColors.primary.withValues(alpha: 0.12)
                   : Colors.white,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(

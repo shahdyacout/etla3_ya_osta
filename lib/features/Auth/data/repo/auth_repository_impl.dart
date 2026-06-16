@@ -58,14 +58,17 @@ class AuthRepositoryImpl implements AuthRepository {
     final userId = userCredential.user?.uid ?? '';
     final phone = userCredential.user?.phoneNumber ?? '';
 
+    final prefs = await SharedPreferences.getInstance();
+    final selectedRole = prefs.getString(_keyRole);
+
     // بنحفظ المستخدم في Firestore
     await _firestore.collection('users').doc(userId).set({
       'phone': phone,
       'createdAt': FieldValue.serverTimestamp(),
       'lastLogin': FieldValue.serverTimestamp(),
+      if (selectedRole != null) 'role': selectedRole,
     }, SetOptions(merge: true));
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
     await prefs.setString(_keyUserId, userId);
 
