@@ -1,4 +1,3 @@
-
 class TripEntity {
   final String tripId;
   final String driverId;
@@ -9,6 +8,7 @@ class TripEntity {
   final double price;
   final int availableSeats;
   final int occupiedSeats;
+  final double depositAmount;
 
   TripEntity({
     required this.tripId,
@@ -20,5 +20,6 @@ class TripEntity {
     required this.price,
     required this.availableSeats,
     required this.occupiedSeats,
+    this.depositAmount = 0.0,
   });
 }

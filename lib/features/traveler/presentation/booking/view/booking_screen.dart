@@ -1,4 +1,3 @@
-import 'package:etla3_ya_osta/core/utils/snackbar_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,9 +10,7 @@ import '../cubit/booking_state.dart';
 
 class BookingScreen extends StatefulWidget {
   final TripEntity trip;
-
   const BookingScreen({super.key, required this.trip});
-
   @override
   State<BookingScreen> createState() => _BookingScreenState();
 }
@@ -29,7 +26,6 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -39,30 +35,15 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         title: const Text(
           "Booking Details",
-          style: TextStyle(
-            color: AppColors.textDark,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
         ),
       ),
-
       body: BlocConsumer<BookingCubit, BookingState>(
         listener: (context, state) {
-          if (state is BookingSuccess) {
-            Navigator.pushNamed(
-              context,
-              AppRouter.qr,
-              arguments: state.booking,
-            );
-          }
-
           if (state is BookingError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
-
         builder: (context, state) {
           final bookingState = state is BookingLoaded
               ? state
@@ -91,95 +72,53 @@ class _BookingScreenState extends State<BookingScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    "From",
-                                    style: TextStyle(color: AppColors.grey),
-                                  ),
-                                  Text(
-                                    bookingState.trip.departurePoint,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  const Text("From", style: TextStyle(color: AppColors.grey)),
+                                  Text(bookingState.trip.departurePoint,
+                                      style: const TextStyle(fontWeight: FontWeight.bold)),
                                 ],
                               ),
                               const Icon(Icons.arrow_forward),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  const Text(
-                                    "To",
-                                    style: TextStyle(color: AppColors.grey),
-                                  ),
-                                  Text(
-                                    bookingState.trip.destinationName,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  const Text("To", style: TextStyle(color: AppColors.grey)),
+                                  Text(bookingState.trip.destinationName,
+                                      style: const TextStyle(fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 12),
-
                         _card(
                           child: Column(
                             children: [
                               const Text("Number of Seats"),
-
                               const SizedBox(height: 10),
-
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   IconButton(
                                     onPressed: bookingState.selectedSeats > 1
                                         ? () {
-                                      context
-                                          .read<BookingCubit>()
-                                          .changeSeats(
-                                        bookingState.selectedSeats -
-                                            1,
-                                      );
+                                      context.read<BookingCubit>().changeSeats(bookingState.selectedSeats - 1);
                                     }
                                         : null,
                                     icon: const Icon(Icons.remove),
                                   ),
-
                                   Column(
                                     children: [
-                                      Text(
-                                        "${bookingState.selectedSeats}",
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                      Text("${bookingState.selectedSeats}",
+                                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 4),
-                                      Text(
-                                        "${bookingState.trip
-                                            .availableSeats} seats available",
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                      ),
+                                      Text("${bookingState.trip.availableSeats} seats available",
+                                          style: const TextStyle(color: Colors.grey)),
                                     ],
                                   ),
-
                                   IconButton(
-                                    onPressed:
-                                    bookingState.selectedSeats <
-                                        bookingState.trip.availableSeats
+                                    onPressed: bookingState.selectedSeats < bookingState.trip.availableSeats
                                         ? () {
-                                      context
-                                          .read<BookingCubit>()
-                                          .changeSeats(
-                                        bookingState.selectedSeats +
-                                            1,
-                                      );
+                                      context.read<BookingCubit>().changeSeats(bookingState.selectedSeats + 1);
                                     }
                                         : null,
                                     icon: const Icon(Icons.add),
@@ -189,48 +128,38 @@ class _BookingScreenState extends State<BookingScreen> {
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 12),
-
                         _card(
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    "Base fare (${bookingState
-                                        .selectedSeats} seats)",
-                                  ),
-                                  Text(
-                                    "${bookingState.trip.price *
-                                        bookingState.selectedSeats} EGP",
-                                  ),
+                                  Text("Base fare (${bookingState.selectedSeats} seats)"),
+                                  Text("${bookingState.trip.price * bookingState.selectedSeats} EGP"),
                                 ],
                               ),
-
                               const Divider(),
-
                               Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
-                                    "Total",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${bookingState.total} EGP",
-                                    style: const TextStyle(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  const Text("Total", style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text("${bookingState.total} EGP",
+                                      style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
                                 ],
                               ),
+                              if (bookingState.trip.depositAmount > 0) ...[
+                                const Divider(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text("Deposit Required",
+                                        style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                                    Text("${bookingState.trip.depositAmount} EGP",
+                                        style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -238,19 +167,37 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                   ),
                 ),
-
                 AppButton(
-                  label: "Confirm Booking",
+                  label: bookingState.trip.depositAmount > 0 ? "Confirm & Pay Deposit" : "Confirm Booking",
                   isLoading: isLoading,
                   onPressed: isLoading
                       ? null
                       : () {
-                    context.read<BookingCubit>().book(
-                      tripId: bookingState.trip.tripId,
-                      travelerId: FirebaseAuth.instance.currentUser!.uid,
-                      seatNumber: bookingState.selectedSeats,
-                      driverId: bookingState.trip.driverId,
-                    );
+                    final user = FirebaseAuth.instance.currentUser!;
+                    final deposit = bookingState.trip.depositAmount;
+                    if (deposit > 0) {
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.payment,
+                        arguments: {
+                          'bookingId': 'pending_${DateTime.now().millisecondsSinceEpoch}',
+                          'amount': deposit,
+                          'travelerName': user.displayName ?? 'Traveler',
+                          'travelerPhone': user.phoneNumber ?? '+201000000000',
+                          'trip': bookingState.trip,
+                          'travelerId': user.uid,
+                          'seatNumber': bookingState.selectedSeats,
+                          'driverId': bookingState.trip.driverId,
+                        },
+                      );
+                    } else {
+                      context.read<BookingCubit>().book(
+                        tripId: bookingState.trip.tripId,
+                        travelerId: user.uid,
+                        seatNumber: bookingState.selectedSeats,
+                        driverId: bookingState.trip.driverId,
+                      );
+                    }
                   },
                 ),
               ],
@@ -268,9 +215,7 @@ class _BookingScreenState extends State<BookingScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 8),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 8)],
       ),
       child: child,
     );
