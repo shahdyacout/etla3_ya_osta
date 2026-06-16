@@ -1,0 +1,625 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/router/app_router.dart';
+import '../cubit/driver_cubit.dart';
+import '../cubit/driver_state.dart';
+import 'qr_scanner_dialog.dart';
+
+class DriverHomeScreen extends StatefulWidget {
+  const DriverHomeScreen({super.key});
+
+  @override
+  State<DriverHomeScreen> createState() => _DriverHomeScreenState();
+}
+
+class _DriverHomeScreenState extends State<DriverHomeScreen>
+    with TickerProviderStateMixin {
+  static const Color primarySage = Color(0xFF9BB59A);
+  static const Color darkText = Color(0xFF2F4054);
+  static const Color lightBackground = Color(0xFFF5F5F5);
+  static const Color successGreen = Color(0xFF4CAF50);
+  static const Color coralRed = Color(0xFFE57373);
+
+  late AnimationController _bannerController;
+  late Animation<double> _bannerFade;
+  late Animation<Offset> _bannerSlide;
+
+  late AnimationController _queueController;
+  late Animation<double> _queueFade;
+  late Animation<Offset> _queueSlide;
+
+  bool _showSuccessBanner = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _bannerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _bannerFade = CurvedAnimation(
+      parent: _bannerController,
+      curve: Curves.easeIn,
+    );
+    _bannerSlide = Tween<Offset>(
+      begin: const Offset(0, -0.5),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _bannerController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _queueController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _queueFade = CurvedAnimation(
+      parent: _queueController,
+      curve: Curves.easeIn,
+    );
+    _queueSlide = Tween<Offset>(
+      begin: const Offset(0, 0.4),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _queueController,
+      curve: Curves.easeOutBack,
+    ));
+
+    final driverId = FirebaseAuth.instance.currentUser?.uid ?? 'mock_driver_id';
+    context.read<DriverCubit>().initDriver(driverId);
+  }
+
+  @override
+  void dispose() {
+    _bannerController.dispose();
+    _queueController.dispose();
+    super.dispose();
+  }
+
+  void _onStatusChanged(bool isOnline) {
+    if (isOnline) {
+      setState(() => _showSuccessBanner = true);
+      _bannerController.forward(from: 0);
+      _queueController.forward(from: 0);
+
+      Future.delayed(const Duration(seconds: 4), () {
+        if (mounted) {
+          _bannerController.reverse().then((_) {
+            if (mounted) setState(() => _showSuccessBanner = false);
+          });
+        }
+      });
+    } else {
+      _queueController.reverse();
+      setState(() => _showSuccessBanner = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+
+    return Scaffold(
+      backgroundColor: lightBackground,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          "Smart Microbus Management App",
+          style: TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: darkText),
+            onPressed: () => Navigator.pushNamed(context, AppRouter.notifications),
+          ),
+        ],
+      ),
+      body: BlocConsumer<DriverCubit, DriverState>(
+        listenWhen: (prev, curr) => prev.isOnline != curr.isOnline,
+        listener: (context, state) {
+          _onStatusChanged(state.isOnline);
+        },
+        builder: (context, state) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 16 : 20.0,
+              vertical: isSmallScreen ? 12 : 16.0,
+            ),
+            child: Column(
+              children: [
+                if (_showSuccessBanner) ...[
+                  _buildSuccessBanner(),
+                  SizedBox(height: isSmallScreen ? 12 : 16),
+                ],
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: state.isOnline
+                      ? _buildOnlineStatusCard(context, state, isSmallScreen)
+                      : _buildOfflineStatusCard(context, state, isSmallScreen),
+                ),
+                SizedBox(height: isSmallScreen ? 16 : 20),
+                if (state.isOnline) ...[
+                  FadeTransition(
+                    opacity: _queueFade,
+                    child: SlideTransition(
+                      position: _queueSlide,
+                      child: _buildQueuePositionCard(state, isSmallScreen),
+                    ),
+                  ),
+                  SizedBox(height: isSmallScreen ? 16 : 20),
+                ],
+                _buildPerformanceCard(state, isSmallScreen),
+                SizedBox(height: isSmallScreen ? 16 : 24),
+                _buildBottomButtons(context, state, isSmallScreen),
+                SizedBox(height: isSmallScreen ? 12 : 16),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSuccessBanner() {
+    return SlideTransition(
+      position: _bannerSlide,
+      child: FadeTransition(
+        opacity: _bannerFade,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: successGreen.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: successGreen.withValues(alpha: 0.2)),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: successGreen,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                "You are now online!",
+                style: TextStyle(
+                  color: successGreen,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOfflineStatusCard(BuildContext context, DriverState state, bool isSmallScreen) {
+    return Container(
+      key: const ValueKey('offline_card'),
+      width: double.infinity,
+      padding: EdgeInsets.all(isSmallScreen ? 24 : 32.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            "Go Online",
+            style: TextStyle(
+              color: darkText,
+              fontSize: isSmallScreen ? 20 : 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "Start accepting ride requests",
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(height: isSmallScreen ? 16 : 24),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: state.isLoading ? null : () => context.read<DriverCubit>().goOnline(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primarySage,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: state.isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.power_settings_new, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          "Go Online",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOnlineStatusCard(BuildContext context, DriverState state, bool isSmallScreen) {
+    return Container(
+      key: const ValueKey('online_card'),
+      width: double.infinity,
+      padding: EdgeInsets.all(isSmallScreen ? 24 : 32.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            "You're Online",
+            style: TextStyle(
+              color: darkText,
+              fontSize: isSmallScreen ? 20 : 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "Ready to accept rides",
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(height: isSmallScreen ? 16 : 24),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: state.isLoading ? null : () => context.read<DriverCubit>().goOffline(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: coralRed,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: state.isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.power_settings_new, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          "Go Offline",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQueuePositionCard(DriverState state, bool isSmallScreen) {
+    bool isReady = state.queuePosition == 1;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        vertical: isSmallScreen ? 24 : 32,
+        horizontal: isSmallScreen ? 16 : 24,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            isReady ? Icons.check_circle_outline : Icons.group_outlined,
+            color: isReady ? successGreen : Colors.grey,
+            size: isSmallScreen ? 32 : 40,
+          ),
+          SizedBox(height: isSmallScreen ? 8 : 12),
+          Text(
+            isReady ? "Your vehicle is ready for boarding" : "Queue Position",
+            style: TextStyle(
+              color: isReady ? successGreen : Colors.grey,
+              fontSize: 14,
+              fontWeight: isReady ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "#${state.queuePosition == 0 ? 4 : state.queuePosition}",
+            style: TextStyle(
+              color: primarySage,
+              fontSize: isSmallScreen ? 36 : 48,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            "in Cairo Central Station",
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(height: isSmallScreen ? 12 : 20),
+          if (isReady)
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.read<DriverCubit>().startBoarding();
+                  Navigator.pushNamed(context, AppRouter.passengerLoading);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primarySage,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text(
+                  "Start Boarding",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                "Estimated wait: ~32 minutes",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPerformanceCard(DriverState state, bool isSmallScreen) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(isSmallScreen ? 16 : 24.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Today's Performance",
+            style: TextStyle(
+              color: darkText,
+              fontSize: isSmallScreen ? 16 : 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: isSmallScreen ? 12 : 20),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: isSmallScreen ? 1.3 : 1.1,
+            children: [
+              _buildStatItem(
+                icon: Icons.trending_up,
+                value: state.completedTrips.toString(),
+                label: "Completed Trips",
+                isSmallScreen: isSmallScreen,
+              ),
+              _buildStatItem(
+                icon: Icons.account_balance_wallet_outlined,
+                value: "${state.totalEarnings.toStringAsFixed(0)} EGP",
+                label: "Total Earnings",
+                isSmallScreen: isSmallScreen,
+              ),
+              _buildStatItem(
+                icon: Icons.access_time,
+                value: "${state.activeHours}h",
+                label: "Active Hours",
+                isSmallScreen: isSmallScreen,
+              ),
+              _buildStatItem(
+                icon: Icons.group_outlined,
+                value: "${state.avgRating}★",
+                label: "Avg Rating",
+                isSmallScreen: isSmallScreen,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem({
+    required IconData icon,
+    required String value,
+    required String label,
+    required bool isSmallScreen,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 12 : 16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(
+          color: Colors.grey.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: primarySage, size: isSmallScreen ? 20 : 24),
+          SizedBox(height: isSmallScreen ? 8 : 12),
+          Text(
+            value,
+            style: TextStyle(
+              color: darkText,
+              fontSize: isSmallScreen ? 14 : 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomButtons(BuildContext context, DriverState state, bool isSmallScreen) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildActionButton(
+            label: "QR Scanner",
+            onPressed: state.isOnline ? () {
+              showDialog(
+                context: context,
+                builder: (_) => BlocProvider.value(
+                  value: context.read<DriverCubit>(),
+                  child: const QrScannerDialog(),
+                ),
+              );
+            } : null,
+            isSmallScreen: isSmallScreen,
+          ),
+        ),
+        SizedBox(width: isSmallScreen ? 12 : 16),
+        Expanded(
+          child: _buildActionButton(
+            label: "View Wallet",
+            onPressed: () => Navigator.pushNamed(context, AppRouter.driverWallet),
+            isSmallScreen: isSmallScreen,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton({
+    required String label,
+    required VoidCallback? onPressed,
+    required bool isSmallScreen,
+  }) {
+    final isEnabled = onPressed != null;
+
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(
+          color: isEnabled ? Colors.grey.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.1),
+        ),
+      ),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isEnabled ? darkText : Colors.grey.withValues(alpha: 0.5),
+            fontWeight: FontWeight.bold,
+            fontSize: isSmallScreen ? 13 : 15,
+          ),
+        ),
+      ),
+    );
+  }
+}

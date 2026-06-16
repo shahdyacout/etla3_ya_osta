@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/entities/trip_entity.dart';
-import '../../../domain/usecase/book_trip_usecase.dart';
+import '../../../domain/usecases/book_trip_usecase.dart';
 import 'booking_state.dart';
 
 class BookingCubit extends Cubit<BookingState> {
@@ -20,12 +20,16 @@ class BookingCubit extends Cubit<BookingState> {
     final current = state;
 
     if (current is BookingLoaded) {
+      if (seats < 1) return;
+
+      if (seats > current.trip.availableSeats) return;
+
       emit(
-        BookingLoaded(
-          trip: current.trip,
-          selectedSeats: seats,
-        ),
+          current.copyWith(
+            selectedSeats: seats,
+          )
       );
+
     }
   }
 
@@ -33,25 +37,32 @@ class BookingCubit extends Cubit<BookingState> {
     required String tripId,
     required String travelerId,
     required int seatNumber,
+    required String driverId,
   }) async {
     final current = state;
 
-    if (current is BookingLoaded) {
-      emit(BookingLoading(current));
-    }
+    if (current is! BookingLoaded) return;
+
+    emit(BookingLoading(current));
 
     try {
       final booking = await bookTrip(
         tripId: tripId,
         travelerId: travelerId,
         seatNumber: seatNumber,
+        driverId: driverId,
       );
 
-      emit(
-        BookingSuccess(booking),
-      );
+      emit(BookingSuccess(booking));
     } catch (e) {
-      emit(BookingError(e.toString()));
+      emit(current);
+
+      emit(
+        BookingError(
+          e.toString(),
+        ),
+      );
     }
   }
+
 }

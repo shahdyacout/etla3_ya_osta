@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/entities/trip_entity.dart';
 import '../../../../../core/router/app_router.dart';
 import '../../../../../core/theme/app_colors.dart';
+import '../../extensions/trip_ui_extension.dart';
 import '../cubit/trips_cubit.dart';
 import '../cubit/trips_state.dart';
 
@@ -31,13 +32,13 @@ class _TripsScreenState extends State<TripsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Available Trips",
           style: TextStyle(
-            color: AppColors.textDark,
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),

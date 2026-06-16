@@ -1,5 +1,6 @@
 
 enum UserRole {
+  
   traveler,
   driver,
 }

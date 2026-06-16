@@ -18,3 +18,11 @@ class CacheFailure extends Failure {
 class InvalidInputFailure extends Failure {
   const InvalidInputFailure(super.message);
 }
+
+class AuthFailure extends Failure {
+  const AuthFailure() : super('User not authenticated');
+}
+
+class InsufficientBalanceFailure extends Failure {
+  const InsufficientBalanceFailure() : super('Insufficient balance');
+}

@@ -1,8 +1,10 @@
+import 'package:etla3_ya_osta/core/utils/snackbar_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../core/entities/trip_entity.dart';
 import '../../../../../core/router/app_router.dart';
+import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../cubit/booking_cubit.dart';
 import '../cubit/booking_state.dart';
@@ -10,18 +12,13 @@ import '../cubit/booking_state.dart';
 class BookingScreen extends StatefulWidget {
   final TripEntity trip;
 
-  const BookingScreen({
-    super.key,
-    required this.trip,
-  });
+  const BookingScreen({super.key, required this.trip});
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  int seatCount = 1;
-
   @override
   void initState() {
     super.initState();
@@ -30,22 +27,22 @@ class _BookingScreenState extends State<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF91A896);
-    const textColor = Color(0xFF1E3A5F);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.background,
 
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: textColor),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Booking Details",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
 
@@ -60,9 +57,9 @@ class _BookingScreenState extends State<BookingScreen> {
           }
 
           if (state is BookingError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
 
@@ -74,9 +71,7 @@ class _BookingScreenState extends State<BookingScreen> {
               : null;
 
           if (bookingState == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final isLoading = state is BookingLoading;
@@ -98,7 +93,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 children: [
                                   const Text(
                                     "From",
-                                    style: TextStyle(color: Colors.grey),
+                                    style: TextStyle(color: AppColors.grey),
                                   ),
                                   Text(
                                     bookingState.trip.departurePoint,
@@ -114,7 +109,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 children: [
                                   const Text(
                                     "To",
-                                    style: TextStyle(color: Colors.grey),
+                                    style: TextStyle(color: AppColors.grey),
                                   ),
                                   Text(
                                     bookingState.trip.destinationName,
@@ -141,31 +136,52 @@ class _BookingScreenState extends State<BookingScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   IconButton(
-                                    onPressed: seatCount > 1
+                                    onPressed: bookingState.selectedSeats > 1
                                         ? () {
-                                      setState(() => seatCount--);
-
                                       context
                                           .read<BookingCubit>()
-                                          .changeSeats(seatCount);
+                                          .changeSeats(
+                                        bookingState.selectedSeats -
+                                            1,
+                                      );
                                     }
                                         : null,
                                     icon: const Icon(Icons.remove),
                                   ),
 
-                                  Text(
-                                    "$seatCount",
-                                    style: const TextStyle(fontSize: 20),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "${bookingState.selectedSeats}",
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        "${bookingState.trip
+                                            .availableSeats} seats available",
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
 
                                   IconButton(
-                                    onPressed: () {
-                                      setState(() => seatCount++);
-
+                                    onPressed:
+                                    bookingState.selectedSeats <
+                                        bookingState.trip.availableSeats
+                                        ? () {
                                       context
                                           .read<BookingCubit>()
-                                          .changeSeats(seatCount);
-                                    },
+                                          .changeSeats(
+                                        bookingState.selectedSeats +
+                                            1,
+                                      );
+                                    }
+                                        : null,
                                     icon: const Icon(Icons.add),
                                   ),
                                 ],
@@ -184,10 +200,12 @@ class _BookingScreenState extends State<BookingScreen> {
                                 MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Base fare ($seatCount seats)",
+                                    "Base fare (${bookingState
+                                        .selectedSeats} seats)",
                                   ),
                                   Text(
-                                    "${bookingState.trip.price * seatCount} EGP",
+                                    "${bookingState.trip.price *
+                                        bookingState.selectedSeats} EGP",
                                   ),
                                 ],
                               ),
@@ -207,7 +225,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                   Text(
                                     "${bookingState.total} EGP",
                                     style: const TextStyle(
-                                      color: primaryColor,
+                                      color: AppColors.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -229,8 +247,9 @@ class _BookingScreenState extends State<BookingScreen> {
                       : () {
                     context.read<BookingCubit>().book(
                       tripId: bookingState.trip.tripId,
-                      travelerId: "user123",
-                      seatNumber: seatCount,
+                      travelerId: FirebaseAuth.instance.currentUser!.uid,
+                      seatNumber: bookingState.selectedSeats,
+                      driverId: bookingState.trip.driverId,
                     );
                   },
                 ),
@@ -250,10 +269,7 @@ class _BookingScreenState extends State<BookingScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(10),
-            blurRadius: 8,
-          ),
+          BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 8),
         ],
       ),
       child: child,

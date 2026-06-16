@@ -5,6 +5,8 @@ class BookingEntity {
   final int seatNumber;
   final String status;
   final DateTime createdAt;
+  final String driverId;
+
 
   BookingEntity({
     required this.bookingId,
@@ -13,5 +15,6 @@ class BookingEntity {
     required this.seatNumber,
     required this.status,
     required this.createdAt,
+    required this.driverId,
   });
 }

@@ -1,16 +1,26 @@
+import 'package:etla3_ya_osta/core/entities/trip_rating_entity.dart';
 import 'package:etla3_ya_osta/core/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/di/service_locator.dart';
+import '../../domain/usecases/rate_trip_usecase.dart';
 
 class RatingScreen extends StatefulWidget {
   final String tripId;
-  final String driverName;
+  final String driverId;
+
+
+
+
+  final String travelerId;
 
   const RatingScreen({
     super.key,
     required this.tripId,
-    required this.driverName,
+    required this.driverId,
+
+    required this.travelerId,
   });
 
   @override
@@ -22,7 +32,6 @@ class _RatingScreenState extends State<RatingScreen> {
   final List<String> _selectedTags = [];
   bool _isLoading = false;
 
-  // الـ tags الثابتة
   static const List<String> _availableTags = [
     'Clean car',
     'On time',
@@ -42,8 +51,7 @@ class _RatingScreenState extends State<RatingScreen> {
           child: Column(
             children: [
               const Spacer(flex: 1),
-              _DriverInfoSection(driverName: widget.driverName),
-              const SizedBox(height: 32),
+
               _StarsSection(
                 selectedStars: _selectedStars,
                 onStarTapped: (stars) {
@@ -82,21 +90,29 @@ class _RatingScreenState extends State<RatingScreen> {
     });
   }
 
- void _onSubmit() {
-  if (_selectedStars == 0) return;
+  void _onSubmit() {
+    if (_selectedStars == 0) return;
+    setState(() => _isLoading = true);
 
-  setState(() => _isLoading = true);
+    final rating = TripRating(
+      tripId: widget.tripId,
+      driverId: widget.driverId,
+      travelerId: widget.travelerId,
+      stars: _selectedStars,
+      tags: _selectedTags,
+    );
 
-  Future.delayed(const Duration(seconds: 1), () {
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-
-
-    SnackbarHelper.showSuccess(context, 'Rating submitted! Thank you ⭐');
-
-    _navigateHome();
-  });
-}
+    sl<RateTripUseCase>().call(rating).then((_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      SnackbarHelper.showSuccess(context, 'Rating submitted! Thank you ⭐');
+      _navigateHome();
+    }).catchError((_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      SnackbarHelper.showError(context, 'Failed to submit rating');
+    });
+  }
 
   void _onSkip() => _navigateHome();
 
@@ -117,12 +133,13 @@ class _DriverInfoSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Avatar
         Container(
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.15),
+
+            color: AppColors.primary.withAlpha(15),
+
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -179,7 +196,6 @@ class _StarsSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Icon(
               isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
-              // النجمة المختارة بتبقى amber والفاضية رمادية
               color: isSelected ? const Color(0xFFFFC107) : AppColors.border,
               size: isSelected ? 48 : 44,
             ),
@@ -221,9 +237,8 @@ class _TagsSection extends StatelessWidget {
               vertical: 10,
             ),
             decoration: BoxDecoration(
-              // المختار بيتلون بالـ primary
               color: isSelected
-                  ? AppColors.primary.withOpacity(0.12)
+                  ? AppColors.primary.withValues(alpha: 0.12)
                   : Colors.white,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(

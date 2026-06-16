@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/entities/trip_entity.dart';
-import '../../../domain/usecase/get_trips_usecase.dart';
+import '../../../domain/usecases/get_trips_usecase.dart';
 import 'trips_state.dart';
 
 
@@ -19,14 +19,4 @@ class TripsCubit extends Cubit<TripsState> {
       emit(TripsError(e.toString()));
     }
   }
-}
-
-extension TripUI on TripEntity {
-  String get priceText => "$price EGP";
-
-  String get seatsText => "$availableSeats seats left";
-
-  String get departureText => "Departure: $departurePoint";
-
-  bool get isActive => status == "active" || status == "available";
 }

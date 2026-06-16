@@ -1,0 +1,22 @@
+flutter_native_splash:
+  color: "#F9F9F9"  ##====================================[REQUIRED]==========
+  image: assets/splash/masar_native_splash.png
+
+
+  fullscreen: true                # default false
+
+  android_12:
+    # background color
+    color: "#F9F9F9"
+
+    image: assets/splash/masar_native_splash.png
+    # image_dark: assets/images/logo/logo-splash2.png
+
+    # center-logo background color
+
+    # icon_background_color_dark: "#eeeeee"
+
+    # branding:
+    # The branding image dimensions must be 800x320 px.
+    #branding:      assets/dart.png
+    #branding_dark: assets/dart_dark.png

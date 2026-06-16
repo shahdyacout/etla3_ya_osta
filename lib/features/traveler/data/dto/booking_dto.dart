@@ -4,6 +4,8 @@ import 'package:etla3_ya_osta/core/entities/booking_entity.dart';
 class BookingDto extends BookingEntity {
 
 
+
+
   BookingDto({
     required super.bookingId,
     required super.tripId,
@@ -11,6 +13,7 @@ class BookingDto extends BookingEntity {
     required super.status,
     required super.seatNumber,
     required super.createdAt,
+    required super.driverId,
 
   });
 
@@ -22,6 +25,7 @@ class BookingDto extends BookingEntity {
       seatNumber: json['seatNumber'] ?? 0,
       status: json['status'] ?? '',
       createdAt: (json['createdAt'] as Timestamp).toDate(),
+      driverId: json['driverId'] ?? '',
     );
   }
 
@@ -32,6 +36,8 @@ class BookingDto extends BookingEntity {
       'travelerId': travelerId,
       'seatNumber': seatNumber,
       'status': status,
+      'createdAt': createdAt,
+      'driverId': driverId,
     };
   }
 }

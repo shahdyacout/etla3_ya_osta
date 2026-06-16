@@ -39,8 +39,8 @@ warning: in the working copy of 'web/index.html', LF will be replaced by CRLF th
  .../features/Auth/domain/entities/auth_state.dart  |   8 [32m+[m[31m-[m
  .../features/Auth/domain/entities/trip_rating.dart |  14 [31m-[m
  .../features/Auth/domain/entities/user_role.dart   |   5 [31m-[m
- .../domain/repo interface/auth_repository.dart     |   4 [32m+[m[31m-[m
- .../domain/repo interface/rating_repository.dart   |   4 [32m+[m[31m-[m
+ .../domain/repository/auth_repository.dart     |   4 [32m+[m[31m-[m
+ .../domain/repository/rating_repository.dart   |   4 [32m+[m[31m-[m
  .../Auth/domain/usecases/rate_trip_usecase.dart    |   5 [32m+[m[31m-[m
  .../Auth/domain/usecases/select_role_usecase.dart  |   4 [32m+[m[31m-[m
  .../Auth/presentation/provider/auth_provider.dart  | 104 [31m-------[m
@@ -61,8 +61,8 @@ warning: in the working copy of 'web/index.html', LF will be replaced by CRLF th
  .../Auth/data/repo/auth_repository_impl.dart       |   9 [32m+[m[31m-[m
  .../Auth/data/repo/rating_repository_impl.dart     |   5 [32m+[m[31m-[m
  lib/features/Auth/domain/entities/auth_state.dart  |   8 [32m+[m[31m-[m
- .../domain/repo interface/auth_repository.dart     |   4 [32m+[m[31m-[m
- .../domain/repo interface/rating_repository.dart   |   4 [32m+[m[31m-[m
+ .../domain/repository/auth_repository.dart     |   4 [32m+[m[31m-[m
+ .../domain/repository/rating_repository.dart   |   4 [32m+[m[31m-[m
  .../Auth/domain/usecases/rate_trip_usecase.dart    |   5 [32m+[m[31m-[m
  .../Auth/domain/usecases/select_role_usecase.dart  |   4 [32m+[m[31m-[m
  .../Auth/presentation/provider/auth_provider.dart  |  34 [32m+[m[31m--[m
