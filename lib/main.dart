@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'core/di/service_locator.dart';
+import 'core/utils/permissions_service.dart';
 import 'features/traveler/presentation/booking/cubit/booking_cubit.dart';
 import 'features/traveler/presentation/destination/cubit/destinations_cubit.dart';
 import 'features/traveler/presentation/trips/cubit/trips_cubit.dart';
@@ -75,6 +76,8 @@ class _AuthGateState extends State<AuthGate> {
   Future<void> _loadSession() async {
     final authCubit = context.read<AuthCubit>();
     await authCubit.checkAuth();
+    await PermissionsService.requestPermissions();
+
 
     if (!mounted) return;
     final state = authCubit.state;
