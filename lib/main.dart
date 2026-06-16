@@ -130,7 +130,7 @@ class _AuthGateState extends State<AuthGate> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: Text(
-          '',
+          "",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
