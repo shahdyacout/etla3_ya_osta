@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 import 'package:etla3_ya_osta/core/error/failures.dart';
 
 abstract class DriverRepository {
