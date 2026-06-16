@@ -8,7 +8,7 @@ import '../models/payment_result_model.dart';
 
 class PaymentRepositoryImpl implements PaymentRepository {
   final String functionUrl =
-      'https://us-central1-masar-app-f9283.cloudfunctions.net/createPaymentIntent';
+      'https://masar-payment-server.onrender.com/createPaymentIntent';
 
   @override
   Future<PaymentResultEntity> createPaymentIntent(PaymentEntity payment) async {
