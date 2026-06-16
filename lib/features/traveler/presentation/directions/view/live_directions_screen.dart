@@ -42,10 +42,7 @@ class LiveDirectionsScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      // تقدري هنا تحطي كارت الـ 150m العلوي لاحقاً
                       const SizedBox(height: 8),
-
-                      // الـ Container الأبيض الكبير المحيط بالـ Live Directions
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
