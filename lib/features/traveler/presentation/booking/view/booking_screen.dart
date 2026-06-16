@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/entities/trip_entity.dart';
@@ -177,6 +178,27 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                   ),
                 ),
+                if (kDebugMode)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: TextButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              final user = FirebaseAuth.instance.currentUser!;
+                              context.read<BookingCubit>().book(
+                                    tripId: bookingState.trip.tripId,
+                                    travelerId: user.uid,
+                                    seatNumber: bookingState.selectedSeats,
+                                    driverId: bookingState.trip.driverId,
+                                  );
+                            },
+                      child: const Text(
+                        "Mock Success (Dev Only)",
+                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
                 AppButton(
                   label: bookingState.trip.depositAmount > 0 ? "Confirm & Pay Deposit" : "Confirm Booking",
                   isLoading: isLoading,

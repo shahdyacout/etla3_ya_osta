@@ -12,7 +12,11 @@ class TripDto extends TripEntity {
     required super.departurePoint,
     required super.status,
     double depositAmount = 0.0,
-  }) : super(depositAmount: depositAmount);
+    double driverRating = 0.0,
+  }) : super(
+          depositAmount: depositAmount,
+          driverRating: driverRating,
+        );
 
   factory TripDto.fromJson(String id, Map<String, dynamic> json) {
     return TripDto(
@@ -26,6 +30,7 @@ class TripDto extends TripEntity {
       departurePoint: json['departurePoint'],
       status: json['status'],
       depositAmount: (json['depositAmount'] as num?)?.toDouble() ?? 0.0,
+      driverRating: (json['driverRating'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

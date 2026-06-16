@@ -27,7 +27,7 @@ class DirectionsCubit extends Cubit<DirectionsState> {
     _mockTimer?.cancel();
     int currentIndex = 0;
 
-    _mockTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _mockTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (state is DirectionsLoaded) {
         final currentSteps = (state as DirectionsLoaded).steps;
         

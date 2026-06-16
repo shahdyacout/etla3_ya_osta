@@ -27,7 +27,6 @@ class _TripsScreenState extends State<TripsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -44,17 +43,14 @@ class _TripsScreenState extends State<TripsScreen> {
           ),
         ),
       ),
-
       body: BlocBuilder<TripsCubit, TripsState>(
         builder: (context, state) {
-          // loading
           if (state is TripsLoading) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             );
           }
 
-          // error
           if (state is TripsError) {
             return Center(
               child: Text(
@@ -64,7 +60,6 @@ class _TripsScreenState extends State<TripsScreen> {
             );
           }
 
-          // loaded
           if (state is TripsLoaded) {
             final trips = state.trips;
 
@@ -82,7 +77,6 @@ class _TripsScreenState extends State<TripsScreen> {
               itemCount: trips.length,
               itemBuilder: (context, index) {
                 final TripEntity trip = trips[index];
-
                 return _TripCard(trip: trip);
               },
             );
@@ -100,82 +94,102 @@ class _TripCard extends StatelessWidget {
 
   const _TripCard({required this.trip});
 
+  Widget _buildRatingBadge(double rating) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          rating > 0 ? rating.toStringAsFixed(1) : "New",
+          style: const TextStyle(
+            color: AppColors.textDark,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(width: 4),
+        const Icon(Icons.star_rounded, color: Colors.amber, size: 20),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-
+        borderRadius: BorderRadius.circular(20),
         onTap: () {
           Navigator.pushNamed(
             context,
-              AppRouter.booking,
-              arguments: trip,
+            AppRouter.booking,
+            arguments: trip,
           );
         },
-
         child: Padding(
-          padding: const EdgeInsets.all(16),
-
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
-              Text(
-                trip.destinationName,
-                style: const TextStyle(
-                  color: AppColors.textDark,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      trip.destinationName,
+                      style: const TextStyle(
+                        color: AppColors.textDark,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19,
+                      ),
+                    ),
+                  ),
+                  _buildRatingBadge(trip.driverRating),
+                ],
               ),
-
-              const SizedBox(height: 6),
-
-              // Departure (from extension)
+              const SizedBox(height: 8),
               Text(
                 trip.departureText,
                 style: const TextStyle(
                   color: AppColors.textLight,
-                  fontSize: 13,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-
-              const SizedBox(height: 12),
-
-              // Bottom row
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Seats
-                  Text(
-                    trip.seatsText,
-                    style: const TextStyle(
-                      color: AppColors.textDark,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: [
+                      const Icon(Icons.airline_seat_recline_normal, color: AppColors.primary, size: 18),
+                      const SizedBox(width: 6),
+                      Text(
+                        trip.seatsText,
+                        style: const TextStyle(
+                          color: AppColors.textDark,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-
-                  // Price
                   Text(
                     trip.priceText,
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 18,
                     ),
                   ),
                 ],

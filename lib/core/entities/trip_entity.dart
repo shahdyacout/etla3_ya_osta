@@ -9,6 +9,7 @@ class TripEntity {
   final int availableSeats;
   final int occupiedSeats;
   final double depositAmount;
+  final double driverRating;
 
   TripEntity({
     required this.tripId,
@@ -21,5 +22,6 @@ class TripEntity {
     required this.availableSeats,
     required this.occupiedSeats,
     this.depositAmount = 0.0,
+    this.driverRating = 0.0,
   });
 }

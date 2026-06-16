@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../../../../core/theme/app_colors.dart';
 import '../../../domain/entities/direction_step.dart';
 
 class StepperItem extends StatelessWidget {
@@ -9,96 +9,93 @@ class StepperItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // تحديد الألوان والخلفيات بناءً على حالة الخطوة
     final bool isDone = step.status == 'done';
     final bool isCurrent = step.status == 'current';
 
-    Color cardBgColor = Colors.white;
-    Color iconBgColor = const Color(0xFFE9ECEF);
-    Color iconColor = const Color(0xFF6C757D);
-    IconData iconData = Icons.arrow_forward_rounded;
-    double cardElevation = 0.5;
-
-    if (isDone) {
-      cardBgColor = const Color(0xFFF1F3F5); // خلفية رمادية خفيفة للخطوات المنتهية
-      iconBgColor = const Color(0xFFD3E2D8); // دائرة خضراء هادية
-      iconColor = const Color(0xFF52796F);
-      iconData = Icons.check_rounded;
-    } else if (isCurrent) {
-      cardBgColor = const Color(0xFFF4F7F6); // خلفية مائلة للأخضر خفيف جداً
-      iconBgColor = const Color(0xFF84A59D); // اللون الزيتي الهادي اللي في الصورة
-      iconColor = Colors.white;
-      cardElevation = 2.0; // رفع الكارت الحالي خفيفاً بـ Shadow ناعم
-    } else if (step.text.contains("Bus")) {
-      iconData = Icons.location_on_rounded; // أيقونة اللوكيشن لخطوة الأوتوبيس الأخيرة
-    }
-
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
       margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: cardBgColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isCurrent ? 0.06 : 0.02),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: isDone ? const Color(0xFFF8F9FA) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isCurrent ? const Color(0xFFE0E7E5) : Colors.transparent,
-          width: 1,
+          color: isCurrent ? AppColors.primary.withOpacity(0.2) : Colors.transparent,
+          width: 1.5,
         ),
+        boxShadow: isCurrent
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                )
+              ]
+            : [],
       ),
       child: Padding(
         padding: const EdgeInsets.all(14.0),
         child: Row(
           children: [
-            // الدائرة اللي جواها الأيقونة على الشمال
-            Container(
+            // Icon Circle
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: iconBgColor,
+                color: isCurrent
+                    ? AppColors.primary
+                    : (isDone ? const Color(0xFFDDE7E1) : const Color(0xFFF1F3F5)),
                 shape: BoxShape.circle,
               ),
-              child: Icon(iconData, color: iconColor, size: 20),
+              child: Icon(
+                isDone
+                    ? Icons.check_rounded
+                    : (step.text.contains("Bus")
+                        ? Icons.location_on_rounded
+                        : Icons.arrow_forward_rounded),
+                color: isCurrent
+                    ? Colors.white
+                    : (isDone ? AppColors.primary : const Color(0xFFADB5BD)),
+                size: 20,
+              ),
             ),
             const SizedBox(width: 16),
-            // نصوص وتفاصيل الخطوة
+            // Text Content
             Expanded(
               child: Text(
                 step.text,
                 style: TextStyle(
                   fontSize: 15,
-                  fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w500,
-                  color: isDone ? const Color(0xFFADB5BD) : const Color(0xFF343A40),
-                  // عمل خط مشطوب لو الخطوة خلصت (Line-through)
+                  fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
+                  color: isDone ? const Color(0xFFADB5BD) : AppColors.textDark,
                   decoration: isDone ? TextDecoration.lineThrough : TextDecoration.none,
                 ),
               ),
             ),
-            // الـ Badge بتاع Current أو المسافة على اليمين
+            // Status Badge or Distance
             if (isCurrent)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1F2937), // اللون الكحلي الغامق للـ Badge
+                  color: const Color(0xFF1F2937), // Dark Charcoal/Navy
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
                   "Current",
-                  style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               )
             else if (!isDone && step.distance != "0m")
               Text(
                 step.distance,
                 style: const TextStyle(
-                  color: Color(0xFF6C757D),
+                  color: Color(0xFFADB5BD),
                   fontSize: 13,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
           ],

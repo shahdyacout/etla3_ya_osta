@@ -26,7 +26,6 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    // الألوان المستوحاة من التصميم
 
     return Scaffold(
       backgroundColor: AppColors.background,
