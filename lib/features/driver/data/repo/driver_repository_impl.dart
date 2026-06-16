@@ -65,6 +65,16 @@ class DriverRepositoryImpl implements DriverRepository {
   }
 
   @override
+  Future<Either<Failure, void>> startBoardingWithSeats(String tripId, int availableSeats) async {
+    try {
+      await remoteDataSource.startBoardingWithSeats(tripId, availableSeats);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> endTrip(String tripId, String driverId, int passengers, double earnings) async {
     try {
       await remoteDataSource.endTrip(tripId, driverId, passengers, earnings);

@@ -8,5 +8,5 @@ extension TripUI on TripEntity {
 
   String get departureText => "Departure: $departurePoint";
 
-  bool get isActive => status == "active" || status == "available";
+  bool get isActive => status == "boarding";
 }

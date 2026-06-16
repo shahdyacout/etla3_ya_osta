@@ -7,6 +7,7 @@ abstract class DriverRemoteDataSource {
   Stream<QuerySnapshot<Map<String, dynamic>>> getActiveTripStream(String driverId);
   Future<void> verifyPassengerBooking(String bookingId, String driverId);
   Future<void> updateTripStatus(String tripId, String status);
+  Future<void> startBoardingWithSeats(String tripId, int availableSeats);
   Future<void> endTrip(String tripId, String driverId, int passengers, double earnings);
 }
 
@@ -35,12 +36,14 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
         if (driverSnap.exists) {
           final data = driverSnap.data()!;
           final Timestamp? onlineSince = data['onlineSince'] as Timestamp?;
-          int totalActiveMinutes = data['totalActiveMinutes'] as int? ?? 0;
+          int totalActiveMinutes = (data['totalActiveMinutes'] as int? ?? 0).clamp(0, 99999);
 
           if (onlineSince != null) {
             final now = DateTime.now();
             final difference = now.difference(onlineSince.toDate()).inMinutes;
-            totalActiveMinutes += difference;
+            if (difference > 0) {
+              totalActiveMinutes += difference;
+            }
           }
 
           transaction.update(driverDocRef, {
@@ -68,6 +71,13 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
           .get();
 
       if (tripsQuery.docs.isEmpty) {
+        final driverDoc = await driverDocRef.get();
+        final driverData = driverDoc.data();
+        final String destinationId = driverData?['destinationId'] as String? ?? 'unknown';
+        final String destinationName = driverData?['destinationName'] as String? ?? 'Unknown';
+        final double tripPrice = (driverData?['tripPrice'] as num?)?.toDouble() ?? 0.0;
+        const String departurePoint = 'موقف السلام';
+
         final newTripRef = firestore.collection('trips').doc();
         await newTripRef.set({
           'tripId': newTripRef.id,
@@ -77,8 +87,11 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
           'occupiedSeats': 0,
           'passengers': [],
           'createdAt': FieldValue.serverTimestamp(),
-          'route': 'Cairo Central → Alexandria',
-          'price': 50.0,
+          'route': '$departurePoint → $destinationName',
+          'destinationId': destinationId,
+          'destinationName': destinationName,
+          'departurePoint': departurePoint,
+          'price': tripPrice,
         });
       }
     }
@@ -93,23 +106,35 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
   Stream<int> getQueuePositionStream(String driverId) {
     return firestore
         .collection('drivers')
-        .where('isOnline', isEqualTo: true)
+        .doc(driverId)
         .snapshots()
-        .map((snapshot) {
-      final docs = List<DocumentSnapshot>.from(snapshot.docs);
-      docs.sort((a, b) {
-        final aData = a.data() as Map<String, dynamic>?;
-        final bData = b.data() as Map<String, dynamic>?;
-        final aTime = aData?['lastOnlineAt'] as Timestamp?;
-        final bTime = bData?['lastOnlineAt'] as Timestamp?;
-        if (aTime == null || bTime == null) return 0;
-        return aTime.compareTo(bTime);
-      });
+        .asyncExpand((driverSnap) {
+      if (!driverSnap.exists) return Stream.value(0);
+      final driverData = driverSnap.data();
+      final String? destinationId = driverData?['destinationId'] as String?;
+      if (destinationId == null || destinationId.isEmpty) return Stream.value(0);
 
-      for (int i = 0; i < docs.length; i++) {
-        if (docs[i].id == driverId) return i + 1;
-      }
-      return 0;
+      return firestore
+          .collection('drivers')
+          .where('isOnline', isEqualTo: true)
+          .where('destinationId', isEqualTo: destinationId)
+          .snapshots()
+          .map((snapshot) {
+        final docs = List<DocumentSnapshot>.from(snapshot.docs);
+        docs.sort((a, b) {
+          final aData = a.data() as Map<String, dynamic>?;
+          final bData = b.data() as Map<String, dynamic>?;
+          final aTime = aData?['lastOnlineAt'] as Timestamp?;
+          final bTime = bData?['lastOnlineAt'] as Timestamp?;
+          if (aTime == null || bTime == null) return 0;
+          return aTime.compareTo(bTime);
+        });
+
+        for (int i = 0; i < docs.length; i++) {
+          if (docs[i].id == driverId) return i + 1;
+        }
+        return 0;
+      });
     });
   }
 
@@ -141,7 +166,8 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
       final int occupied = tripData['occupiedSeats'] ?? 0;
 
       if (passengers.contains(bookingId)) throw Exception('Passenger already checked in');
-      if (occupied >= 14) throw Exception('Vehicle is full');
+      final availableSeats = tripData['availableSeats'] as int? ?? 14;
+      if (occupied >= availableSeats) throw Exception('Vehicle is full');
 
       passengers.add(bookingId);
       transaction.update(tripDoc.reference, {
@@ -157,6 +183,16 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
   @override
   Future<void> updateTripStatus(String tripId, String status) async {
     await firestore.collection('trips').doc(tripId).update({'status': status});
+  }
+
+  @override
+  Future<void> startBoardingWithSeats(String tripId, int availableSeats) async {
+    await firestore.collection('trips').doc(tripId).update({
+      'status': 'boarding',
+      'availableSeats': availableSeats,
+      'occupiedSeats': 0,
+      'passengers': [],
+    });
   }
 
   @override

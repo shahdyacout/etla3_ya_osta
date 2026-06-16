@@ -67,14 +67,14 @@ class _PassengerLoadingScreenState extends State<PassengerLoadingScreen>
         centerTitle: true,
       ),
       body: BlocConsumer<DriverCubit, DriverState>(
-        listenWhen: (prev, curr) => prev.occupiedSeats != curr.occupiedSeats || prev.verificationMessage != curr.verificationMessage,
+        listenWhen: (prev, curr) => prev.occupiedSeats != curr.occupiedSeats || prev.verificationMessage != curr.verificationMessage || prev.availableSeats != curr.availableSeats,
         listener: (context, state) {
           if (state.verificationMessage != null) {
             _showBanner();
           }
         },
         builder: (context, state) {
-          final isFull = state.occupiedSeats >= 14;
+          final isFull = state.occupiedSeats >= state.availableSeats;
 
           return Stack(
             children: [
@@ -137,7 +137,7 @@ class _PassengerLoadingScreenState extends State<PassengerLoadingScreen>
   }
 
   Widget _buildLoadingProgressCard(DriverState state) {
-    double progress = state.occupiedSeats / 14;
+    double progress = state.availableSeats > 0 ? state.occupiedSeats / state.availableSeats : 0;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: _cardDecoration(),
@@ -158,7 +158,7 @@ class _PassengerLoadingScreenState extends State<PassengerLoadingScreen>
                     const Text("Passenger Loading",
                         style: TextStyle(color: darkText, fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text("${state.occupiedSeats}/14",
+                    Text("${state.occupiedSeats}/${state.availableSeats}",
                         style: const TextStyle(color: primarySage, fontSize: 14, fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -177,8 +177,8 @@ class _PassengerLoadingScreenState extends State<PassengerLoadingScreen>
           ),
           const SizedBox(height: 12),
           Text(
-            state.occupiedSeats >= 14 ? "Microbus Fully Loaded - Ready To Start Trip" : "Scan passenger QR codes to check them in",
-            style: TextStyle(color: state.occupiedSeats >= 14 ? successGreen : Colors.grey, fontSize: 13, fontWeight: state.occupiedSeats >= 14 ? FontWeight.bold : FontWeight.normal),
+            state.occupiedSeats >= state.availableSeats ? "Microbus Fully Loaded - Ready To Start Trip" : "Scan passenger QR codes to check them in",
+            style: TextStyle(color: state.occupiedSeats >= state.availableSeats ? successGreen : Colors.grey, fontSize: 13, fontWeight: state.occupiedSeats >= state.availableSeats ? FontWeight.bold : FontWeight.normal),
           ),
         ],
       ),
@@ -209,7 +209,7 @@ class _PassengerLoadingScreenState extends State<PassengerLoadingScreen>
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: 14,
+            itemCount: state.availableSeats,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16,

@@ -17,8 +17,8 @@ class TravelerRepositoryImpl implements TravelerRepository {
   }
 
   @override
-  Future<List<TripEntity>> getTrips(String destinationId) {
-    return remote.getTrips(destinationId);
+  Stream<List<TripEntity>> getTripsStream(String destinationId) {
+    return remote.getTripsStream(destinationId);
   }
 
   @override

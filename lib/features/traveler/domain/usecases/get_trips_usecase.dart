@@ -6,7 +6,7 @@ class GetTripsUseCase {
 
   GetTripsUseCase(this.repo);
 
-  Future<List<TripEntity>> call(String destinationId) {
-    return repo.getTrips(destinationId);
+  Stream<List<TripEntity>> call(String destinationId) {
+    return repo.getTripsStream(destinationId);
   }
 }

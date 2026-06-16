@@ -9,10 +9,27 @@
       ]
     },
     {
+      "collectionGroup": "drivers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isOnline", "order": "ASCENDING" },
+        { "fieldPath": "destinationId", "order": "ASCENDING" },
+        { "fieldPath": "lastOnlineAt", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "trips",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "driverId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "trips",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "destinationId", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" }
       ]
     }
