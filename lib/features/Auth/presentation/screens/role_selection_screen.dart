@@ -78,7 +78,7 @@ class _HeaderSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Masar',
+          'etla3_ya_osta',
           style: TextStyle(
             fontSize: 40,
             fontWeight: FontWeight.w700,
