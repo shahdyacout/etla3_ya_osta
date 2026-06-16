@@ -66,7 +66,7 @@ app.post('/createPaymentIntent', async (req, res) => {
     const orderId = await registerOrder(authToken, amount, bookingId);
     const paymentKey = await getPaymentKey(authToken, orderId, amount, integrationId, travelerName, travelerPhone);
 
-    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/908213?payment_token=${paymentKey}`;
+    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/1052844?payment_token=${paymentKey}`;
 
     res.json({ success: true, checkoutUrl, paymentKey });
   } catch (error) {
