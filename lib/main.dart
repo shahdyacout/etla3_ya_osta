@@ -129,19 +129,13 @@ class _AuthGateState extends State<AuthGate> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 24),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'etla3_ya_osta',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-                letterSpacing: 0.8,
-              ),
-            ),
+        leading: Text(
+          '',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+            letterSpacing: 0.8,
           ),
         ),
         leadingWidth: 100,
