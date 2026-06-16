@@ -33,6 +33,7 @@ import '../../features/Auth/domain/repo interface/rating_repository.dart';
 import '../../features/Auth/data/repo/rating_repository_impl.dart';
 
 import '../utils/notification_service.dart';
+import '../utils/navigation_state_service.dart';
 
 final sl = GetIt.instance;
 
@@ -45,6 +46,7 @@ Future<void> init() async {
 
   // Utils
   sl.registerLazySingleton(() => NotificationService());
+  sl.registerLazySingleton(() => NavigationStateService());
 
   // Data Sources
   sl.registerLazySingleton<TravelerRemoteDataSource>(

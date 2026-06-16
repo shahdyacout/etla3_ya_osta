@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'core/di/service_locator.dart';
+import 'core/utils/permissions_service.dart';
+import 'core/utils/navigation_state_service.dart';
 import 'core/di/injection.dart' hide sl;
 import 'features/traveler/presentation/booking/cubit/booking_cubit.dart';
 import 'features/traveler/presentation/destination/cubit/destinations_cubit.dart';
@@ -12,9 +14,9 @@ import 'features/driver/presentation/cubit/driver_cubit.dart';
 import 'features/wallet/presentation/cubit/wallet_cubit.dart';
 import 'features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'firebase_options.dart';
-import 'Core/entities/user_role_entity.dart';
-import 'Core/router/app_router.dart';
-import 'Core/theme/app_colors.dart';
+import 'core/entities/user_role_entity.dart';
+import 'core/router/app_router.dart';
+import 'core/theme/app_colors.dart';
 import 'features/Auth/presentation/cubit/auth_cubit.dart';
 import 'features/Auth/presentation/cubit/auth_cubit_provider.dart';
 
@@ -55,6 +57,8 @@ class MasarApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final navService = sl<NavigationStateService>();
+
     return MaterialApp(
 
       title: 'etla3_ya_osta',
@@ -62,6 +66,7 @@ class MasarApp extends StatelessWidget {
       navigatorKey: NotificationService.navigatorKey,
       home: const AuthGate(),
       onGenerateRoute: AppRouter.generateRoute,
+      navigatorObservers: [AppNavigationObserver(navService)],
     );
   }
 }
@@ -83,15 +88,32 @@ class _AuthGateState extends State<AuthGate> {
   Future<void> _loadSession() async {
     final authCubit = context.read<AuthCubit>();
     await authCubit.checkAuth();
+    await PermissionsService.requestPermissions();
+
 
     if (!mounted) return;
     final state = authCubit.state;
     if (state.isAuthenticated && state.role != null) {
-      final route = state.role == UserRole.traveler
-          ? AppRouter.destinations
-          : AppRouter.driverHome;
+      final role = state.role!;
+      final navService = sl<NavigationStateService>();
+      final saved = await navService.getSavedRoute();
+
+      String route;
+      Object? args;
+
+      if (saved.route != null &&
+          navService.isRouteValidForRole(saved.route!, role) &&
+          navService.canRestoreRoute(saved.route!, saved.args)) {
+        route = saved.route!;
+        args = navService.restoreArgsForRoute(route, saved.args);
+      } else {
+        route = role == UserRole.traveler
+            ? AppRouter.destinations
+            : AppRouter.driverHome;
+      }
+
       if (mounted) {
-        Navigator.pushReplacementNamed(context, route);
+        Navigator.pushReplacementNamed(context, route, arguments: args);
       }
     } else {
       if (mounted) {

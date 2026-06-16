@@ -32,13 +32,13 @@ class _TripsScreenState extends State<TripsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Available Trips",
           style: TextStyle(
-            color: AppColors.textDark,
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),

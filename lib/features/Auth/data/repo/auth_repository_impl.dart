@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:etla3_ya_osta/core/entities/user_role_entity.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   static const _keyRole = 'user_role';
@@ -79,6 +80,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> selectRole(UserRole role) async {
     final roleStr = role == UserRole.traveler ? 'traveler' : 'driver';
 
+    // وكمان في SharedPreferences كـ cache
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyRole, roleStr);
+
     // بنحفظ الـ role في Firestore
     final userId = _firebaseAuth.currentUser?.uid;
     if (userId != null) {
@@ -86,10 +91,6 @@ class AuthRepositoryImpl implements AuthRepository {
         'role': roleStr,
       }, SetOptions(merge: true));
     }
-
-    // وكمان في SharedPreferences كـ cache
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyRole, roleStr);
   }
 
   @override
@@ -105,38 +106,35 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<({String? token, UserRole? role})> getSession() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.reload(); // إجبار النظام على قراءة أحدث بيانات من التخزين
+    
     final firebaseUser = _firebaseAuth.currentUser;
 
     if (firebaseUser == null) {
-      await prefs.remove('auth_token');
-      await prefs.remove(_keyRole);
-      await prefs.remove(_keyUserId);
       return (token: null, role: null);
     }
 
-    // قراءة البيانات المحفوظة محلياً أولاً (سريع جداً)
+    // قراءة البيانات المحفوظة محلياً
     final cachedToken = prefs.getString('auth_token');
     final cachedRoleStr = prefs.getString(_keyRole);
 
-    UserRole? cachedRole;
-    if (cachedRoleStr != null) {
-      cachedRole = cachedRoleStr == 'traveler'
-          ? UserRole.traveler
-          : UserRole.driver;
-    }
-
-    // إرجاع البيانات المخزنة فوراً
-    if (cachedToken != null && cachedRole != null) {
-      // تحديث Token في الخلفية دون توقف المستخدم
-      _refreshTokenInBackground(firebaseUser, prefs);
-      return (token: cachedToken, role: cachedRole);
-    }
-
-    // إذا لم توجد بيانات مخزنة، بننتظر الجلب من Firebase
-    final freshToken = await firebaseUser.getIdToken(true) ?? '';
-    await prefs.setString('auth_token', freshToken);
-
     UserRole? role;
+    if (cachedRoleStr == 'traveler') {
+      role = UserRole.traveler;
+    } else if (cachedRoleStr == 'driver') {
+      role = UserRole.driver;
+    }
+
+    // لو البيانات كاملة في الكاش نرجعها فوراً
+    if (cachedToken != null && role != null) {
+      _refreshTokenInBackground(firebaseUser, prefs);
+      return (token: cachedToken, role: role);
+    }
+
+    // لو مش كاملة، نجيب التوكن والروول من السيرفر
+    final freshToken = await firebaseUser.getIdToken(true);
+    await prefs.setString('auth_token', freshToken!);
+
     try {
       final doc = await _firestore
           .collection('users')
@@ -144,30 +142,27 @@ class AuthRepositoryImpl implements AuthRepository {
           .get();
 
       final roleStr = doc.data()?['role'] as String?;
-      if (roleStr != null) {
-        role = roleStr == 'traveler' ? UserRole.traveler : UserRole.driver;
-        await prefs.setString(_keyRole, roleStr);
+      if (roleStr == 'traveler') {
+        role = UserRole.traveler;
+        await prefs.setString(_keyRole, 'traveler');
+      } else if (roleStr == 'driver') {
+        role = UserRole.driver;
+        await prefs.setString(_keyRole, 'driver');
       }
-    } catch (_) {
-      // لو حصل خطأ، نستخدم الـ cached role
-      if (cachedRole != null) {
-        role = cachedRole;
-      }
+    } catch (e) {
+      debugPrint("Error fetching role from Firestore: $e");
     }
 
     return (token: freshToken, role: role);
   }
 
-  // تحديث Token في الخلفية دون توقف المستخدم
   Future<void> _refreshTokenInBackground(
     User firebaseUser,
     SharedPreferences prefs,
   ) async {
     try {
-      final freshToken = await firebaseUser.getIdToken(true) ?? '';
-      await prefs.setString('auth_token', freshToken);
-    } catch (_) {
-      // تجاهل الأخطاء في الخلفية
-    }
+      final freshToken = await firebaseUser.getIdToken(true);
+      await prefs.setString('auth_token', freshToken!);
+    } catch (_) {}
   }
 }
