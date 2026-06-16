@@ -42,6 +42,12 @@ class _BookingScreenState extends State<BookingScreen> {
         listener: (context, state) {
           if (state is BookingError) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+          } else if (state is BookingSuccess) {
+            Navigator.pushReplacementNamed(
+              context,
+              AppRouter.qr,
+              arguments: state.booking,
+            );
           }
         },
         builder: (context, state) {
@@ -51,8 +57,12 @@ class _BookingScreenState extends State<BookingScreen> {
               ? state.previousData
               : null;
 
-          if (bookingState == null) {
+          if (bookingState == null && state is! BookingSuccess) {
             return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is BookingSuccess) {
+            return const SizedBox();
           }
 
           final isLoading = state is BookingLoading;
@@ -73,7 +83,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text("From", style: TextStyle(color: AppColors.grey)),
-                                  Text(bookingState.trip.departurePoint,
+                                  Text(bookingState!.trip.departurePoint,
                                       style: const TextStyle(fontWeight: FontWeight.bold)),
                                 ],
                               ),

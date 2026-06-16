@@ -33,9 +33,8 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: const Icon(Icons.menu, color:AppColors.textDark),
         title: const Text(
-          "Masar",
+          "Etl3 ya Osta",
           style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 22),
         ),
         actions: [
