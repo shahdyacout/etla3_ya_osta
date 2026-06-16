@@ -49,7 +49,7 @@ class MasarApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
 
-      title: 'Masar',
+      title: 'etla3_ya_osta',
       debugShowCheckedModeBanner: false,
       navigatorKey: NotificationService.navigatorKey,
       home: const AuthGate(),
@@ -104,7 +104,7 @@ class _AuthGateState extends State<AuthGate> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Masar',
+              'etla3_ya_osta',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
