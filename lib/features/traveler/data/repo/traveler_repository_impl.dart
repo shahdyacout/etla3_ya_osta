@@ -26,11 +26,14 @@ class TravelerRepositoryImpl implements TravelerRepository {
     required String tripId,
     required String travelerId,
     required int seatNumber,
+    required String driverId,
   }) {
     return remote.bookTrip(
       tripId: tripId,
       travelerId: travelerId,
       seatNumber: seatNumber,
+      driverId: driverId,
+
     );
   }
 

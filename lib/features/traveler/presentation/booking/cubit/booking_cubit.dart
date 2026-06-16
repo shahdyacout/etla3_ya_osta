@@ -37,6 +37,7 @@ class BookingCubit extends Cubit<BookingState> {
     required String tripId,
     required String travelerId,
     required int seatNumber,
+    required String driverId,
   }) async {
     final current = state;
 
@@ -49,6 +50,7 @@ class BookingCubit extends Cubit<BookingState> {
         tripId: tripId,
         travelerId: travelerId,
         seatNumber: seatNumber,
+        driverId: driverId,
       );
 
       emit(BookingSuccess(booking));

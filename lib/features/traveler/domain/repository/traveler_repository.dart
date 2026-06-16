@@ -12,6 +12,7 @@ abstract class TravelerRepository {
     required String tripId,
     required String travelerId,
     required int seatNumber,
+    required String driverId,
   });
 
   Future<BookingEntity> getBooking(String bookingId);

@@ -10,11 +10,13 @@ class BookTripUseCase {
     required String tripId,
     required String travelerId,
     required int seatNumber,
+    required String driverId,
   }) {
     return repo.bookTrip(
       tripId: tripId,
       travelerId: travelerId,
       seatNumber: seatNumber,
+      driverId: driverId,
     );
   }
 }

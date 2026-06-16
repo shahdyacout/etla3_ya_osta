@@ -37,6 +37,7 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
     required String tripId,
     required String travelerId,
     required int seatNumber,
+    required String driverId,
   }) async {
     final bookingRef = firestore.collection('bookings').doc();
 
@@ -63,6 +64,7 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
         'seatNumber': seatNumber,
         'status': 'confirmed',
         'createdAt': FieldValue.serverTimestamp(),
+        'driverId': driverId,
       });
     });
 
@@ -73,6 +75,7 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
       seatNumber: seatNumber,
       status: "confirmed",
       createdAt: DateTime.now(),
+      driverId: driverId,
     );
   }
 

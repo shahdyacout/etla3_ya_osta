@@ -11,7 +11,6 @@ class QrScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
@@ -31,16 +30,32 @@ class QrScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.check_circle, color: Colors.green, size: 20),
                   SizedBox(width: 8),
-                  Text("Booking confirmed! Proceed to check-in.", style: TextStyle(color: Colors.green, fontWeight: FontWeight.w500)),
+                  Text(
+                    "Booking confirmed! Proceed to check-in.",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
             ),
             const Spacer(),
 
             // نصوص العناوين
-            const Text("Ready to Board", style: TextStyle(color: AppColors.primary, fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text(
+              "Ready to Board",
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 6),
-            const Text("Show this QR code to the driver", style: TextStyle(color: AppColors.grey, fontSize: 14)),
+            const Text(
+              "Show this QR code to the driver",
+              style: TextStyle(color: AppColors.grey, fontSize: 14),
+            ),
             const SizedBox(height: 24),
 
             // كارت الـ QR الرئيسي 흰색
@@ -51,7 +66,11 @@ class QrScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 16, offset: const Offset(0, 8)),
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
                 ],
               ),
               child: Column(
@@ -60,10 +79,15 @@ class QrScreen extends StatelessWidget {
                   QrImageView(
                     data: booking.bookingId,
                     size: 180,
-                    embeddedImageStyle: const QrEmbeddedImageStyle(size: Size(40, 40)),
+                    embeddedImageStyle: const QrEmbeddedImageStyle(
+                      size: Size(40, 40),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  const Text("Booking ID", style: TextStyle(color: AppColors.grey, fontSize: 12)),
+                  const Text(
+                    "Booking ID",
+                    style: TextStyle(color: AppColors.grey, fontSize: 12),
+                  ),
                   const SizedBox(height: 4),
                   // كود تجريبي من الصورة
                   Text(
@@ -91,34 +115,69 @@ class QrScreen extends StatelessWidget {
               child: const Text(
                 "The driver will scan this code to verify your booking and assign your seat.",
                 textAlign: TextAlign.center,
-                style: TextStyle(color:  AppColors.grey, fontSize: 13),
+                style: TextStyle(color: AppColors.grey, fontSize: 13),
               ),
             ),
             const Spacer(),
 
             // زرار View Route Guide
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.navy,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                    elevation: 0,
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRouter.liveDirections);
+            _button(
+              label: "View Route Guide",
+              onPressed: () {
+                Navigator.pushNamed(context, AppRouter.liveDirections);
+              },
+            ),
+            _button(
+              label: "End Trip & Rate Driver",
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.ratingScreen,
+                  arguments: {
+                    'tripId': booking.tripId,
+                    'travelerId': booking.travelerId,
+                    'driverId': booking.driverId,
                   },
-                  icon: const Icon(Icons.navigation_outlined, color: Colors.white, size: 18),
-                  label: const Text("View Route Guide", style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),
       ),
     );
   }
+}
+
+Widget _button({required String label, required VoidCallback onPressed}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+    child: SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.navy,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          elevation: 0,
+        ),
+        onPressed: onPressed,
+
+        icon: const Icon(
+          Icons.navigation_outlined,
+          color: Colors.white,
+          size: 18,
+        ),
+        label: Text(
+          label,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  );
 }
