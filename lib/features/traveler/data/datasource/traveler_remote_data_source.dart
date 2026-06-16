@@ -12,6 +12,7 @@ abstract class TravelerRemoteDataSource {
     required String tripId,
     required String travelerId,
     required int seatNumber,
+    required String driverId,
   });
 
   Future<BookingDto> getBooking(String bookingId);

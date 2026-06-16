@@ -9,14 +9,12 @@ import '../../domain/usecases/rate_trip_usecase.dart';
 class RatingScreen extends StatefulWidget {
   final String tripId;
   final String driverId;
-  final String driverName;
   final String travelerId;
 
   const RatingScreen({
     super.key,
     required this.tripId,
     required this.driverId,
-    required this.driverName,
     required this.travelerId,
   });
 
@@ -48,7 +46,6 @@ class _RatingScreenState extends State<RatingScreen> {
           child: Column(
             children: [
               const Spacer(flex: 1),
-              _DriverInfoSection(driverName: widget.driverName),
               const SizedBox(height: 32),
               _StarsSection(
                 selectedStars: _selectedStars,

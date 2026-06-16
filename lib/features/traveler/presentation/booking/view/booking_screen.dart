@@ -249,6 +249,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       tripId: bookingState.trip.tripId,
                       travelerId: FirebaseAuth.instance.currentUser!.uid,
                       seatNumber: bookingState.selectedSeats,
+                      driverId: bookingState.trip.driverId,
                     );
                   },
                 ),
