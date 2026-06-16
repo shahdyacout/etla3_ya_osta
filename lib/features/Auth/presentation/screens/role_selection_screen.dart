@@ -135,14 +135,14 @@ class _RoleCard extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: AppColors.primary.withValues(alpha: 0.15),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -156,8 +156,8 @@ class _RoleCard extends StatelessWidget {
               height: 60,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppColors.primary.withOpacity(0.12)
-                    : AppColors.border.withOpacity(0.4),
+                    ? AppColors.primary.withValues(alpha: 0.12)
+                    : AppColors.border.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(

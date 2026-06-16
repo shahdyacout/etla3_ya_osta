@@ -19,21 +19,10 @@ class InvalidInputFailure extends Failure {
   const InvalidInputFailure(super.message);
 }
 
-abstract class Either<L, R> {
-  const Either();
-  T fold<T>(T Function(L l) leftFn, T Function(R r) rightFn);
+class AuthFailure extends Failure {
+  const AuthFailure() : super('User not authenticated');
 }
 
-class Left<L, R> extends Either<L, R> {
-  final L value;
-  const Left(this.value);
-  @override
-  T fold<T>(T Function(L l) leftFn, T Function(R r) rightFn) => leftFn(value);
-}
-
-class Right<L, R> extends Either<L, R> {
-  final R value;
-  const Right(this.value);
-  @override
-  T fold<T>(T Function(L l) leftFn, T Function(R r) rightFn) => rightFn(value);
+class InsufficientBalanceFailure extends Failure {
+  const InsufficientBalanceFailure() : super('Insufficient balance');
 }
