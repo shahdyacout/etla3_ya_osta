@@ -125,21 +125,24 @@ exports.paymobWebhook = onRequest(
         if (!admin.apps.length) admin.initializeApp();
         const db = admin.firestore();
 
-        // Update booking
-        await db.collection("bookings").doc(bookingId).update({
+        // Update booking status
+        await db.collection("bookings").doc(bookingId).set({
+          status: "paid",
           deposit_status: "paid",
-          paymob_order_id: obj.order?.id,
+          paidAt: new Date(),
           paid_at: new Date().toISOString(),
-        });
+          paymob_order_id: obj.order?.id,
+        }, { merge: true });
 
         // Update driver wallet
         const bookingDoc = await db.collection("bookings").doc(bookingId).get();
         const booking = bookingDoc.data();
         if (booking?.driverId) {
           const driverRef = db.collection("wallets").doc(booking.driverId);
-          await driverRef.update({
+          await driverRef.set({
             balance: admin.firestore.FieldValue.increment(booking.depositAmount || 0),
-          });
+            currency: "EGP",
+          }, { merge: true });
         }
       }
 

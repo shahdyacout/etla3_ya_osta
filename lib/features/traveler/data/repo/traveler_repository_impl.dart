@@ -33,8 +33,29 @@ class TravelerRepositoryImpl implements TravelerRepository {
       travelerId: travelerId,
       seatNumber: seatNumber,
       driverId: driverId,
-
     );
+  }
+
+  @override
+  Future<BookingEntity> createPendingBooking({
+    required String tripId,
+    required String travelerId,
+    required int seatNumber,
+    required String driverId,
+    required double depositAmount,
+  }) {
+    return remote.createPendingBooking(
+      tripId: tripId,
+      travelerId: travelerId,
+      seatNumber: seatNumber,
+      driverId: driverId,
+      depositAmount: depositAmount,
+    );
+  }
+
+  @override
+  Future<void> confirmBooking(String bookingId) {
+    return remote.confirmBooking(bookingId);
   }
 
   @override

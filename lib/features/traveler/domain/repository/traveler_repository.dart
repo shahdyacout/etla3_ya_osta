@@ -15,6 +15,16 @@ abstract class TravelerRepository {
     required String driverId,
   });
 
+  Future<BookingEntity> createPendingBooking({
+    required String tripId,
+    required String travelerId,
+    required int seatNumber,
+    required String driverId,
+    required double depositAmount,
+  });
+
+  Future<void> confirmBooking(String bookingId);
+
   Future<BookingEntity> getBooking(String bookingId);
   Future<List<DirectionStep>> getLiveDirections();
 }

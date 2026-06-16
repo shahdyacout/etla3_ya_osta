@@ -10,9 +10,9 @@ class DriverRepositoryImpl implements DriverRepository {
   DriverRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, void>> goOnline(String driverId) async {
+  Future<Either<Failure, void>> goOnline(String driverId, {double depositAmount = 0.0}) async {
     try {
-      await remoteDataSource.updateDriverStatus(driverId, true);
+      await remoteDataSource.updateDriverStatus(driverId, true, depositAmount: depositAmount);
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

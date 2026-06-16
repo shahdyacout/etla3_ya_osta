@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class DriverRemoteDataSource {
-  Future<void> updateDriverStatus(String driverId, bool isOnline);
+  Future<void> updateDriverStatus(String driverId, bool isOnline, {double depositAmount = 0.0});
   Stream<DocumentSnapshot<Map<String, dynamic>>> getDriverStream(String driverId);
   Stream<int> getQueuePositionStream(String driverId);
   Stream<QuerySnapshot<Map<String, dynamic>>> getActiveTripStream(String driverId);
@@ -17,7 +17,7 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
   DriverRemoteDataSourceImpl(this.firestore);
 
   @override
-  Future<void> updateDriverStatus(String driverId, bool isOnline) async {
+  Future<void> updateDriverStatus(String driverId, bool isOnline, {double depositAmount = 0.0}) async {
     final driverDocRef = firestore.collection('drivers').doc(driverId);
 
     await firestore.runTransaction((transaction) async {
@@ -29,9 +29,6 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
           'lastOnlineAt': FieldValue.serverTimestamp(),
           'onlineSince': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
-
-        // Ensure a trip exists logic (outside transaction for simplicity in this implementation, 
-        // or keep it if we can check existence within transaction)
       } else {
         if (driverSnap.exists) {
           final data = driverSnap.data()!;
@@ -92,6 +89,7 @@ class DriverRemoteDataSourceImpl implements DriverRemoteDataSource {
           'destinationName': destinationName,
           'departurePoint': departurePoint,
           'price': tripPrice,
+          'depositAmount': depositAmount,
         });
       }
     }

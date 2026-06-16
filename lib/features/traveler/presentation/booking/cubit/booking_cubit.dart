@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../core/entities/booking_entity.dart';
 import '../../../../../core/entities/trip_entity.dart';
 import '../../../domain/usecases/book_trip_usecase.dart';
 import 'booking_state.dart';
@@ -30,6 +31,43 @@ class BookingCubit extends Cubit<BookingState> {
           )
       );
 
+    }
+  }
+
+  Future<BookingEntity?> createPendingBooking({
+    required String tripId,
+    required String travelerId,
+    required int seatNumber,
+    required String driverId,
+    required double depositAmount,
+  }) async {
+    final current = state;
+    if (current is! BookingLoaded) return null;
+
+    emit(BookingLoading(current));
+
+    try {
+      final booking = await bookTrip.createPending(
+        tripId: tripId,
+        travelerId: travelerId,
+        seatNumber: seatNumber,
+        driverId: driverId,
+        depositAmount: depositAmount,
+      );
+
+      emit(current);
+      return booking;
+    } catch (e) {
+      emit(current);
+      return null;
+    }
+  }
+
+  Future<void> confirmBooking(String bookingId) async {
+    try {
+      await bookTrip.confirmBooking(bookingId);
+    } catch (e) {
+      // Silent fail - booking will be confirmed by webhook
     }
   }
 

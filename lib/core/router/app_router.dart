@@ -10,15 +10,19 @@ import 'package:etla3_ya_osta/features/driver/presentation/view/trip_summary_scr
 import 'package:etla3_ya_osta/features/wallet/presentation/view/pages/wallet_page.dart';
 import 'package:etla3_ya_osta/features/wallet/presentation/view/pages/transaction_page.dart';
 import 'package:etla3_ya_osta/features/payment/presentation/pages/payment_page.dart';
+import 'package:etla3_ya_osta/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:etla3_ya_osta/features/driver/presentation/view/driver_wallet_page.dart';
 import 'package:etla3_ya_osta/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/traveler/presentation/booking/view/booking_screen.dart';
+import '../../features/traveler/presentation/booking/cubit/booking_cubit.dart';
 import '../../features/traveler/presentation/destination/view/destinations_screen.dart';
 import '../../features/traveler/presentation/qr/qr_screen.dart';
 import '../../features/traveler/presentation/trips/view/trips_screen.dart';
 import '../../core/entities/booking_entity.dart';
 import '../../core/entities/trip_entity.dart';
+import '../di/injection.dart';
 
 class AppRouter {
   AppRouter._();
@@ -76,7 +80,13 @@ class AppRouter {
 
       case booking:
         final trip = settings.arguments as TripEntity;
-        return _buildRoute(BookingScreen(trip: trip));
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => sl<BookingCubit>(),
+            child: BookingScreen(trip: trip),
+          ),
+        );
+
       case qr:
         final booking = settings.arguments as BookingEntity;
         return _buildRoute(QrScreen(booking: booking));
@@ -95,12 +105,24 @@ class AppRouter {
 
       case payment:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildRoute(PaymentPage(
-          bookingId: args['bookingId'] as String,
-          amount: args['amount'] as double,
-          travelerName: args['travelerName'] as String,
-          travelerPhone: args['travelerPhone'] as String,
-        ));
+        return MaterialPageRoute(
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => sl<PaymentCubit>()),
+              BlocProvider(create: (_) => sl<BookingCubit>()),
+            ],
+            child: PaymentPage(
+              bookingId: args['bookingId'] as String,
+              amount: args['amount'] as double,
+              travelerName: args['travelerName'] as String,
+              travelerPhone: args['travelerPhone'] as String,
+              trip: args['trip'] as TripEntity?,
+              travelerId: args['travelerId'] as String?,
+              seatNumber: args['seatNumber'] as int?,
+              driverId: args['driverId'] as String?,
+            ),
+          ),
+        );
 
       case notifications:
         return _buildRoute(const NotificationsPage());

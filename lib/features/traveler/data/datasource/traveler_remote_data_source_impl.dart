@@ -82,6 +82,61 @@ class TravelerRemoteDataSourceImpl implements TravelerRemoteDataSource {
   }
 
   @override
+  Future<BookingDto> createPendingBooking({
+    required String tripId,
+    required String travelerId,
+    required int seatNumber,
+    required String driverId,
+    required double depositAmount,
+  }) async {
+    final bookingRef = firestore.collection('bookings').doc();
+
+    await firestore.runTransaction((transaction) async {
+      final tripRef = firestore.collection('trips').doc(tripId);
+      final tripSnapshot = await transaction.get(tripRef);
+
+      final availableSeats = tripSnapshot['availableSeats'];
+      if (seatNumber > availableSeats) {
+        throw Exception('Only $availableSeats seats available');
+      }
+
+      transaction.update(tripRef, {
+        'availableSeats': availableSeats - seatNumber,
+        'occupiedSeats': tripSnapshot['occupiedSeats'] + seatNumber,
+      });
+
+      transaction.set(bookingRef, {
+        'bookingId': bookingRef.id,
+        'tripId': tripId,
+        'travelerId': travelerId,
+        'seatNumber': seatNumber,
+        'driverId': driverId,
+        'depositAmount': depositAmount,
+        'status': 'pending_payment',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    });
+
+    return BookingDto(
+      bookingId: bookingRef.id,
+      tripId: tripId,
+      travelerId: travelerId,
+      seatNumber: seatNumber,
+      status: "pending_payment",
+      createdAt: DateTime.now(),
+      driverId: driverId,
+    );
+  }
+
+  @override
+  Future<void> confirmBooking(String bookingId) async {
+    await firestore.collection('bookings').doc(bookingId).set({
+      'status': 'confirmed',
+      'confirmedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  @override
   Future<BookingDto> getBooking(String bookingId) async {
     final doc = await firestore.collection('bookings').doc(bookingId).get();
 

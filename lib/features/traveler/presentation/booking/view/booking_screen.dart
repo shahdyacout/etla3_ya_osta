@@ -173,24 +173,11 @@ class _BookingScreenState extends State<BookingScreen> {
                   onPressed: isLoading
                       ? null
                       : () {
-                    final user = FirebaseAuth.instance.currentUser!;
                     final deposit = bookingState.trip.depositAmount;
                     if (deposit > 0) {
-                      Navigator.pushNamed(
-                        context,
-                        AppRouter.payment,
-                        arguments: {
-                          'bookingId': 'pending_${DateTime.now().millisecondsSinceEpoch}',
-                          'amount': deposit,
-                          'travelerName': user.displayName ?? 'Traveler',
-                          'travelerPhone': user.phoneNumber ?? '+201000000000',
-                          'trip': bookingState.trip,
-                          'travelerId': user.uid,
-                          'seatNumber': bookingState.selectedSeats,
-                          'driverId': bookingState.trip.driverId,
-                        },
-                      );
+                      _showDepositConfirmDialog(context, bookingState);
                     } else {
+                      final user = FirebaseAuth.instance.currentUser!;
                       context.read<BookingCubit>().book(
                         tripId: bookingState.trip.tripId,
                         travelerId: user.uid,
@@ -205,6 +192,220 @@ class _BookingScreenState extends State<BookingScreen> {
           );
         },
       ),
+    );
+  }
+
+  void _showDepositConfirmDialog(BuildContext context, BookingLoaded bookingState) {
+    final user = FirebaseAuth.instance.currentUser!;
+    final trip = bookingState.trip;
+    final totalSeats = bookingState.selectedSeats;
+    final totalFare = trip.price * totalSeats;
+    final deposit = trip.depositAmount;
+    final total = totalFare + deposit;
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withAlpha(77),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(20),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withAlpha(25),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.payment, color: AppColors.primary, size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Text(
+                      "Confirm Deposit Payment",
+                      style: TextStyle(
+                        color: AppColors.textDark,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    _buildDialogRow("Route", "${trip.departurePoint} → ${trip.destinationName}"),
+                    const SizedBox(height: 8),
+                    _buildDialogRow("Seats", "$totalSeats seat(s)"),
+                    const SizedBox(height: 8),
+                    _buildDialogRow("Base Fare", "${totalFare.toStringAsFixed(0)} EGP"),
+                    const Divider(height: 20),
+                    _buildDialogRow(
+                      "Deposit Required",
+                      "${deposit.toStringAsFixed(0)} EGP",
+                      valueColor: Colors.orange,
+                    ),
+                    const Divider(height: 20),
+                    _buildDialogRow(
+                      "Total",
+                      "${total.toStringAsFixed(0)} EGP",
+                      isBold: true,
+                      valueColor: AppColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withAlpha(25),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "Deposit will be refunded after trip completion or deducted if cancelled.",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.orange[800],
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(dialogContext),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(color: Colors.grey.withAlpha(50)),
+                          ),
+                        ),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(dialogContext);
+                          final user = FirebaseAuth.instance.currentUser!;
+                          final booking = await context.read<BookingCubit>().createPendingBooking(
+                            tripId: trip.tripId,
+                            travelerId: user.uid,
+                            seatNumber: totalSeats,
+                            driverId: trip.driverId,
+                            depositAmount: deposit,
+                          );
+                          if (booking != null && context.mounted) {
+                            Navigator.pushNamed(
+                              context,
+                              AppRouter.payment,
+                              arguments: {
+                                'bookingId': booking.bookingId,
+                                'amount': deposit,
+                                'travelerName': user.displayName ?? 'Traveler',
+                                'travelerPhone': user.phoneNumber ?? '+201000000000',
+                                'trip': trip,
+                                'travelerId': user.uid,
+                                'seatNumber': totalSeats,
+                                'driverId': trip.driverId,
+                              },
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          "Pay Deposit",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDialogRow(String label, String value, {bool isBold = false, Color? valueColor}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+            color: valueColor ?? AppColors.textDark,
+          ),
+        ),
+      ],
     );
   }
 

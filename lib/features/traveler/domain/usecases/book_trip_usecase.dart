@@ -19,5 +19,25 @@ class BookTripUseCase {
       driverId: driverId,
     );
   }
+
+  Future<BookingEntity> createPending({
+    required String tripId,
+    required String travelerId,
+    required int seatNumber,
+    required String driverId,
+    required double depositAmount,
+  }) {
+    return repo.createPendingBooking(
+      tripId: tripId,
+      travelerId: travelerId,
+      seatNumber: seatNumber,
+      driverId: driverId,
+      depositAmount: depositAmount,
+    );
+  }
+
+  Future<void> confirmBooking(String bookingId) {
+    return repo.confirmBooking(bookingId);
+  }
 }
 
