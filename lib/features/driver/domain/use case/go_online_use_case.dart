@@ -7,7 +7,7 @@ class GoOnlineUseCase {
 
   GoOnlineUseCase(this.repository);
 
-  Future<Either<Failure, void>> call(String driverId) async {
-    return await repository.goOnline(driverId);
+  Future<Either<Failure, void>> call(String driverId, {double depositAmount = 0.0}) async {
+    return await repository.goOnline(driverId, depositAmount: depositAmount);
   }
 }

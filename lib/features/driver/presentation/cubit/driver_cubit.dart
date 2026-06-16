@@ -146,10 +146,10 @@ class DriverCubit extends Cubit<DriverState> {
     ));
   }
 
-  Future<void> goOnline() async {
+  Future<void> goOnline({double depositAmount = 0.0}) async {
     if (_driverId == null) return;
     emit(state.copyWith(isLoading: true));
-    final result = await goOnlineUseCase(_driverId!);
+    final result = await goOnlineUseCase(_driverId!, depositAmount: depositAmount);
     result.fold(
       (failure) => emit(state.copyWith(isLoading: false, failure: failure)),
       (_) {},

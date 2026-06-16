@@ -15,7 +15,16 @@ abstract class TravelerRemoteDataSource {
     required String driverId,
   });
 
+  Future<BookingDto> createPendingBooking({
+    required String tripId,
+    required String travelerId,
+    required int seatNumber,
+    required String driverId,
+    required double depositAmount,
+  });
+
+  Future<void> confirmBooking(String bookingId);
+
   Future<BookingDto> getBooking(String bookingId);
   Future<List<DirectionStepDto>> getLiveDirections();
-
 }
