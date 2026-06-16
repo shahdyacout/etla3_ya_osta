@@ -55,8 +55,7 @@ class DriverCubit extends Cubit<DriverState> {
           final totalEarnings = (data['totalEarnings'] as num?)?.toDouble() ?? 0.0;
           
           // Calculate Active Hours from totalActiveMinutes
-          final totalMinutes = data['totalActiveMinutes'] as int? ?? 0;
-          final activeHours = totalMinutes / 60.0;
+          final totalMinutes = (data['totalActiveMinutes'] as int? ?? 0).clamp(0, 99999);
           
           final avgRating = (data['avgRating'] as num?)?.toDouble() ?? 0.0;
 
@@ -65,7 +64,7 @@ class DriverCubit extends Cubit<DriverState> {
             isOnline: isOnline,
             completedTrips: completedTrips,
             totalEarnings: totalEarnings,
-            activeHours: activeHours,
+            totalActiveMinutes: totalMinutes,
             avgRating: avgRating,
           ));
 
@@ -103,6 +102,7 @@ class DriverCubit extends Cubit<DriverState> {
           final occupied = tripData['occupiedSeats'] as int? ?? 0;
           final passengers = List<String>.from(tripData['passengers'] ?? []);
           final statusStr = tripData['status'] as String? ?? 'idle';
+          final price = (tripData['price'] as num?)?.toDouble() ?? 0.0;
           
           DriverTripStatus status = DriverTripStatus.idle;
           if (statusStr == 'boarding') status = DriverTripStatus.boarding;
@@ -115,6 +115,7 @@ class DriverCubit extends Cubit<DriverState> {
             occupiedSeats: occupied,
             checkedInPassengerIds: passengers,
             tripStatus: status,
+            tripPrice: price,
           ));
         } else {
           emit(state.copyWith(
@@ -141,6 +142,7 @@ class DriverCubit extends Cubit<DriverState> {
       occupiedSeats: 0,
       checkedInPassengerIds: [],
       tripStatus: DriverTripStatus.idle,
+      tripPrice: 0.0,
     ));
   }
 
@@ -187,7 +189,7 @@ class DriverCubit extends Cubit<DriverState> {
   Future<void> endTrip() async {
     if (state.activeTripId == null || _driverId == null) return;
     emit(state.copyWith(isLoading: true));
-    final earnings = state.occupiedSeats * 50.0;
+    final earnings = state.occupiedSeats * state.tripPrice;
     final result = await endTripUseCase(state.activeTripId!, _driverId!, state.occupiedSeats, earnings);
     result.fold(
       (failure) => emit(state.copyWith(isLoading: false, failure: failure)),
@@ -201,6 +203,7 @@ class DriverCubit extends Cubit<DriverState> {
       activeTripId: null,
       occupiedSeats: 0,
       checkedInPassengerIds: [],
+      tripPrice: 0.0,
     ));
   }
 

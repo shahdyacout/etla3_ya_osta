@@ -8,7 +8,7 @@ class DriverState {
   final int queuePosition;
   final int completedTrips;
   final double totalEarnings;
-  final double activeHours;
+  final int totalActiveMinutes;
   final double avgRating;
   final String? activeTripId;
   final int availableSeats;
@@ -22,6 +22,7 @@ class DriverState {
   final DriverTripStatus tripStatus;
   final List<String> checkedInPassengerIds;
   final DateTime? tripStartTime;
+  final double tripPrice;
 
   const DriverState({
     this.isLoading = false,
@@ -29,7 +30,7 @@ class DriverState {
     this.queuePosition = 0,
     this.completedTrips = 0,
     this.totalEarnings = 0.0,
-    this.activeHours = 0.0,
+    this.totalActiveMinutes = 0,
     this.avgRating = 0.0,
     this.activeTripId,
     this.availableSeats = 14,
@@ -41,6 +42,7 @@ class DriverState {
     this.tripStatus = DriverTripStatus.idle,
     this.checkedInPassengerIds = const [],
     this.tripStartTime,
+    this.tripPrice = 0.0,
   });
 
   DriverState copyWith({
@@ -49,7 +51,7 @@ class DriverState {
     int? queuePosition,
     int? completedTrips,
     double? totalEarnings,
-    double? activeHours,
+    int? totalActiveMinutes,
     double? avgRating,
     String? activeTripId,
     int? availableSeats,
@@ -61,6 +63,7 @@ class DriverState {
     DriverTripStatus? tripStatus,
     List<String>? checkedInPassengerIds,
     DateTime? tripStartTime,
+    double? tripPrice,
     bool clearVerification = false,
     bool clearFailure = false,
   }) {
@@ -70,7 +73,7 @@ class DriverState {
       queuePosition: queuePosition ?? this.queuePosition,
       completedTrips: completedTrips ?? this.completedTrips,
       totalEarnings: totalEarnings ?? this.totalEarnings,
-      activeHours: activeHours ?? this.activeHours,
+      totalActiveMinutes: totalActiveMinutes ?? this.totalActiveMinutes,
       avgRating: avgRating ?? this.avgRating,
       activeTripId: activeTripId ?? this.activeTripId,
       availableSeats: availableSeats ?? this.availableSeats,
@@ -82,6 +85,7 @@ class DriverState {
       tripStatus: tripStatus ?? this.tripStatus,
       checkedInPassengerIds: checkedInPassengerIds ?? this.checkedInPassengerIds,
       tripStartTime: tripStartTime ?? this.tripStartTime,
+      tripPrice: tripPrice ?? this.tripPrice,
     );
   }
 }

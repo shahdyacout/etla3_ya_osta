@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/duration_formatter.dart';
 import '../../../Auth/presentation/cubit/auth_cubit.dart';
 import '../../../../core/router/app_router.dart';
 import '../cubit/driver_cubit.dart';
@@ -659,7 +660,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
               ),
               _buildStatItem(
                 icon: Icons.access_time,
-                value: "${state.activeHours}h",
+                value: DurationFormatter.fromMinutes(state.totalActiveMinutes),
                 label: "Active Hours",
               ),
               _buildStatItem(
